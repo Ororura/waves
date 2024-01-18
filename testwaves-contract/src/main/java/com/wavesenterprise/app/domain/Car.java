@@ -1,12 +1,12 @@
 package com.wavesenterprise.app.domain;
 
 public class Car {
-    private String brandName;
+    private String brand;
     private String model;
     private double maxSpeed;
 
-    public Car(String brandName, String model, double maxSpeed) {
-        this.brandName = brandName;
+    public Car(String brand, String model, double maxSpeed) {
+        this.brand = brand;
         this.model = model;
         this.maxSpeed = maxSpeed;
     }
@@ -14,7 +14,7 @@ public class Car {
     public Car(){}
 
     public String getBrandName() {
-        return brandName;
+        return brand;
     }
 
     public String getModel() {
