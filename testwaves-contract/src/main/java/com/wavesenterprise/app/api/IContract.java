@@ -25,6 +25,9 @@ public interface IContract {
     @ContractAction
     void addDist(@InvokeParam(name = "addDist")Distributor distributor);
 
+    @ContractAction
+    void createRef(@InvokeParam(name = "createRef") String name);
+
     class Keys {
         public static final String CONTRACT_CREATOR = "CONTRACT_CREATOR";
         public static final String FRUIT_MAPPING_PREFIX = "FRUITS";
@@ -32,5 +35,6 @@ public interface IContract {
         public static final String CAR_MAPPING = "CARS";
         public static final String SUPPLIERS_MAPPING = "SUPPLIERS";
         public static final String DISTRIBUTOR_MAPPING = "DISTRIBUTOR";
+        public static final String REF_MAPPING = "DISTRIBUTOR";
     }
 }

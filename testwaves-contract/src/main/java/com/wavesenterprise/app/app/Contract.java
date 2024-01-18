@@ -21,6 +21,7 @@ public class Contract implements IContract {
     private final Mapping<Car> carMapping;
     private final Mapping<Supplier> supplierMapping;
     private final Mapping<Distributor> distributorMapping;
+    private final Mapping<String> refMapping;
 
     public Contract(ContractState contractState, ContractCall call) {
         this.contractState = contractState;
@@ -30,6 +31,7 @@ public class Contract implements IContract {
         this.carMapping = contractState.getMapping(Car.class, CAR_MAPPING);
         this.supplierMapping = contractState.getMapping(Supplier.class, SUPPLIERS_MAPPING);
         this.distributorMapping = contractState.getMapping(Distributor.class, DISTRIBUTOR_MAPPING);
+        this.refMapping = contractState.getMapping(String.class,  REF_MAPPING);
     }
 
     @Override
@@ -60,6 +62,12 @@ public class Contract implements IContract {
     public void addDist(Distributor distributor) {
         this.distributorMapping.put(distributor.getKey(), distributor);
     }
+
+    @Override
+    public void createRef(String name) {
+        this.refMapping.put(String.valueOf(userMapping.tryGet(name)), "PROFI" + name + "2024");
+    }
+
 
     @Override
     public Fruit getFruit(String name) {
