@@ -19,6 +19,8 @@ public class Supplier {
         this.publicKey = publicKey;
     }
 
+    public Supplier() {}
+
     public String getSupplierName() {
         return supplierName;
     }
