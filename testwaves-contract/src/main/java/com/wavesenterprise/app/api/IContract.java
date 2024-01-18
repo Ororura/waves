@@ -1,9 +1,6 @@
 package com.wavesenterprise.app.api;
 
-import com.wavesenterprise.app.domain.Car;
-import com.wavesenterprise.app.domain.Fruit;
-import com.wavesenterprise.app.domain.Supplier;
-import com.wavesenterprise.app.domain.User;
+import com.wavesenterprise.app.domain.*;
 import com.wavesenterprise.sdk.contract.api.annotation.*;
 
 public interface IContract {
@@ -25,11 +22,15 @@ public interface IContract {
     @ContractAction
     void addSupplier(@InvokeParam(name = "addSupplier")Supplier supplier);
 
+    @ContractAction
+    void addDist(@InvokeParam(name = "addDist")Distributor distributor);
+
     class Keys {
         public static final String CONTRACT_CREATOR = "CONTRACT_CREATOR";
         public static final String FRUIT_MAPPING_PREFIX = "FRUITS";
         public static final String USER_MAPPING = "USERS";
         public static final String CAR_MAPPING = "CARS";
         public static final String SUPPLIERS_MAPPING = "SUPPLIERS";
+        public static final String DISTRIBUTOR_MAPPING = "DISTRIBUTOR";
     }
 }

@@ -1,10 +1,7 @@
 package com.wavesenterprise.app.app;
 
 import com.wavesenterprise.app.api.IContract;
-import com.wavesenterprise.app.domain.Car;
-import com.wavesenterprise.app.domain.Fruit;
-import com.wavesenterprise.app.domain.Supplier;
-import com.wavesenterprise.app.domain.User;
+import com.wavesenterprise.app.domain.*;
 import com.wavesenterprise.sdk.contract.api.annotation.ContractHandler;
 import com.wavesenterprise.sdk.contract.api.domain.ContractCall;
 import com.wavesenterprise.sdk.contract.api.state.ContractState;
@@ -23,6 +20,7 @@ public class Contract implements IContract {
     private final Mapping<User> userMapping;
     private final Mapping<Car> carMapping;
     private final Mapping<Supplier> supplierMapping;
+    private final Mapping<Distributor> distributorMapping;
 
     public Contract(ContractState contractState, ContractCall call) {
         this.contractState = contractState;
@@ -31,6 +29,7 @@ public class Contract implements IContract {
         this.fruitMapping = contractState.getMapping(Fruit.class, FRUIT_MAPPING_PREFIX);
         this.carMapping = contractState.getMapping(Car.class, CAR_MAPPING);
         this.supplierMapping = contractState.getMapping(Supplier.class, SUPPLIERS_MAPPING);
+        this.distributorMapping = contractState.getMapping(Distributor.class, DISTRIBUTOR_MAPPING);
     }
 
     @Override
@@ -55,6 +54,11 @@ public class Contract implements IContract {
     @Override
     public void addSupplier(Supplier supplier) {
         this.supplierMapping.put(supplier.getSupplierName(), supplier);
+    }
+
+    @Override
+    public void addDist(Distributor distributor) {
+        this.distributorMapping.put(distributor.getKey(), distributor);
     }
 
     @Override
