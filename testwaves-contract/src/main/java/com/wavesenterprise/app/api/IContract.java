@@ -35,6 +35,6 @@ public interface IContract {
         public static final String CAR_MAPPING = "CARS";
         public static final String SUPPLIERS_MAPPING = "SUPPLIERS";
         public static final String DISTRIBUTOR_MAPPING = "DISTRIBUTOR";
-        public static final String REF_MAPPING = "DISTRIBUTOR";
+        public static final String REF_MAPPING = "REF";
     }
 }

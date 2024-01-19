@@ -65,7 +65,7 @@ public class Contract implements IContract {
 
     @Override
     public void createRef(String name) {
-        this.refMapping.put(String.valueOf(userMapping.tryGet(name)), "PROFI" + name + "2024");
+        this.refMapping.put(name, "PROFI-" + name + "-2024");
     }
 
 
