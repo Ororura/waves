@@ -26,7 +26,7 @@ public interface IContract {
     void addDist(@InvokeParam(name = "addDist")Distributor distributor);
 
     @ContractAction
-    void createRef(@InvokeParam(name = "createRef") String name);
+    void createRef(@InvokeParam(name = "createRef")Refferal refferal);
 
     class Keys {
         public static final String CONTRACT_CREATOR = "CONTRACT_CREATOR";

@@ -1,30 +1,22 @@
 package com.wavesenterprise.app.domain;
 
 public class User {
-    private String firstName;
-    private String lastName;
+    private String login;
+    private String password;
 
-    public User(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(String login, String password) {
+        this.login = login;
+        this.password = password;
     }
 
-    public User() {
+    public User() {}
+
+    public String getLogin() {
+        return login;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public String getPassword() {
+        return password;
     }
 }
+

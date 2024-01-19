@@ -21,7 +21,7 @@ public class Contract implements IContract {
     private final Mapping<Car> carMapping;
     private final Mapping<Supplier> supplierMapping;
     private final Mapping<Distributor> distributorMapping;
-    private final Mapping<String> refMapping;
+    private final Mapping<Refferal> refMapping;
 
     public Contract(ContractState contractState, ContractCall call) {
         this.contractState = contractState;
@@ -31,7 +31,7 @@ public class Contract implements IContract {
         this.carMapping = contractState.getMapping(Car.class, CAR_MAPPING);
         this.supplierMapping = contractState.getMapping(Supplier.class, SUPPLIERS_MAPPING);
         this.distributorMapping = contractState.getMapping(Distributor.class, DISTRIBUTOR_MAPPING);
-        this.refMapping = contractState.getMapping(String.class,  REF_MAPPING);
+        this.refMapping = contractState.getMapping(Refferal.class,  REF_MAPPING);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class Contract implements IContract {
     }
     @Override
     public void addUser(User user) {
-        this.userMapping.put(user.getLastName(), user);
+        this.userMapping.put(user.getLogin(), user);
     }
 
     @Override
@@ -64,8 +64,9 @@ public class Contract implements IContract {
     }
 
     @Override
-    public void createRef(String name) {
-        this.refMapping.put(name, "PROFI-" + name + "-2024");
+    public void createRef(Refferal refferal) {
+        refferal.setName("2024-" + refferal.getUserLogin() + "-PROFI");
+        this.refMapping.put(refferal.getUserLogin(), refferal);
     }
 
 
@@ -75,7 +76,7 @@ public class Contract implements IContract {
         Optional<Fruit> currentFruit = this.fruitMapping.tryGet(name);
         System.out.println(currentFruit);
         return currentFruit.orElseThrow(() -> new IllegalStateException(
-            "Fruit " + name + " does not exist"
+            "Fruit " + name + " doesASDASDASD not exist"
         ));
     }
 
