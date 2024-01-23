@@ -3,6 +3,7 @@ package com.wavesenterprise.app.app;
 import com.wavesenterprise.app.api.IContract;
 import com.wavesenterprise.app.domain.*;
 import com.wavesenterprise.sdk.contract.api.annotation.ContractHandler;
+import com.wavesenterprise.sdk.contract.api.annotation.InvokeParam;
 import com.wavesenterprise.sdk.contract.api.domain.ContractCall;
 import com.wavesenterprise.sdk.contract.api.state.ContractState;
 import com.wavesenterprise.sdk.contract.api.state.mapping.*;
@@ -22,6 +23,7 @@ public class Contract implements IContract {
     private final Mapping<Distributor> distributorMapping;
     private final Mapping<Refferal> refMapping;
     private final Mapping<Boolean> blockedMapping;
+
 
     public Contract(ContractState contractState, ContractCall call) {
         this.contractState = contractState;
@@ -81,4 +83,5 @@ public class Contract implements IContract {
         currentUser.ifPresent(user -> this.userMapping.put(user.getLogin(), user));
         currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
     }
+
 }

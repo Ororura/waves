@@ -1,5 +1,6 @@
 package com.wavesenterprise.app.api;
 
+import com.fasterxml.jackson.databind.ext.SqlBlobSerializer;
 import com.wavesenterprise.app.domain.*;
 import com.wavesenterprise.sdk.contract.api.annotation.*;
 
@@ -25,6 +26,7 @@ public interface IContract {
     @ContractAction
     void blockUser(@InvokeParam(name = "blockUser")BlockUser blockUser);
 
+
     class Keys {
         public static final String CONTRACT_CREATOR = "CONTRACT_CREATOR";
         public static final String USER_MAPPING = "USERS";
@@ -32,6 +34,7 @@ public interface IContract {
         public static final String DISTRIBUTOR_MAPPING = "DISTRIBUTOR";
         public static final String REF_MAPPING = "REF";
         public static final String BLOCKED_MAPPING = "BLOCK";
+        public static final String DISTRIBUTORS_MAPPING = "DISTRIBUTORS";
 
     }
 }
