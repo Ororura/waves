@@ -21,8 +21,7 @@ public class Contract implements IContract {
     private final Mapping<Supplier> supplierMapping;
     private final Mapping<Distributor> distributorMapping;
     private final Mapping<Refferal> refMapping;
-
-    private final Mapping<String> testMapping;
+    private final Mapping<Boolean> blockedMapping;
 
     public Contract(ContractState contractState, ContractCall call) {
         this.contractState = contractState;
@@ -31,7 +30,7 @@ public class Contract implements IContract {
         this.supplierMapping = contractState.getMapping(Supplier.class, SUPPLIERS_MAPPING);
         this.distributorMapping = contractState.getMapping(Distributor.class, DISTRIBUTOR_MAPPING);
         this.refMapping = contractState.getMapping(Refferal.class,  REF_MAPPING);
-        this.testMapping = contractState.getMapping(String.class,TEST_MAPPING);
+        this.blockedMapping = contractState.getMapping(Boolean.class, BLOCKED_MAPPING);
 
     }
 
@@ -65,9 +64,21 @@ public class Contract implements IContract {
     }
 
     @Override
-    public void getUser(String name) {
+    public User getUser(String name) {
         Optional<User> currentUser = this.userMapping.tryGet(name);
         currentUser.ifPresent(user -> System.out.println(user.getLogin()));
+        return currentUser.orElseThrow(() -> new IllegalStateException(name));
+    }
 
+    @Override
+    public void blockUser(BlockUser blockUser) {
+        System.out.println("BLOCK");
+        Optional<User> currentUser = this.userMapping.tryGet(blockUser.getUserName());
+        this.blockedMapping.put(blockUser.getUserName(), blockUser.isStatus());
+        System.out.println(blockUser.getUserName());
+        currentUser.ifPresent(user -> user.setBlocked(blockUser.isStatus()));
+        currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
+        currentUser.ifPresent(user -> this.userMapping.put(user.getLogin(), user));
+        currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
     }
 }
