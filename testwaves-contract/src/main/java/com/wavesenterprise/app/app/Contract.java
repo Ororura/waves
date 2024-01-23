@@ -21,8 +21,7 @@ public class Contract implements IContract {
     private final Mapping<Supplier> supplierMapping;
     private final Mapping<Distributor> distributorMapping;
     private final Mapping<Refferal> refMapping;
-
-    private final Mapping<String> testMapping;
+    private final Mapping<String> blockedMapping;
 
     public Contract(ContractState contractState, ContractCall call) {
         this.contractState = contractState;
@@ -31,7 +30,7 @@ public class Contract implements IContract {
         this.supplierMapping = contractState.getMapping(Supplier.class, SUPPLIERS_MAPPING);
         this.distributorMapping = contractState.getMapping(Distributor.class, DISTRIBUTOR_MAPPING);
         this.refMapping = contractState.getMapping(Refferal.class,  REF_MAPPING);
-        this.testMapping = contractState.getMapping(String.class,TEST_MAPPING);
+        this.blockedMapping = contractState.getMapping(String.class, BLOCKED_MAPPING);
 
     }
 
@@ -69,5 +68,15 @@ public class Contract implements IContract {
         Optional<User> currentUser = this.userMapping.tryGet(name);
         currentUser.ifPresent(user -> System.out.println(user.getLogin()));
 
+    }
+
+    @Override
+    public void blockUser(String name, Boolean status) {
+        Optional<User> currentUser = this.userMapping.tryGet(name);
+        this.blockedMapping.put(name, "Blocked");
+        currentUser.ifPresent(user -> user.setBlocked(true));
+        currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
+        //currentUser.ifPresent(user -> this.userMapping.put(user.getLogin(), user));
+        currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
     }
 }

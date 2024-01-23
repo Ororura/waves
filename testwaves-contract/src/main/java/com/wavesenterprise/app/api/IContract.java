@@ -22,6 +22,9 @@ public interface IContract {
     @ContractAction
     void getUser(@InvokeParam(name = "getUser")String name);
 
+    @ContractAction
+    void blockUser(@InvokeParam(name = "blockUser")String name, Boolean status);
+
     class Keys {
         public static final String CONTRACT_CREATOR = "CONTRACT_CREATOR";
         public static final String USER_MAPPING = "USERS";
@@ -29,6 +32,7 @@ public interface IContract {
         public static final String DISTRIBUTOR_MAPPING = "DISTRIBUTOR";
         public static final String REF_MAPPING = "REF";
         public static final String TEST_MAPPING = "TEST";
+        public static final String BLOCKED_MAPPING = "BLOCK";
 
     }
 }
