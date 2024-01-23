@@ -7,6 +7,7 @@ import com.wavesenterprise.sdk.contract.api.domain.ContractCall;
 import com.wavesenterprise.sdk.contract.api.state.ContractState;
 import com.wavesenterprise.sdk.contract.api.state.mapping.*;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static com.wavesenterprise.app.api.IContract.Keys.*;
@@ -16,22 +17,22 @@ public class Contract implements IContract {
 
     private final ContractState contractState;
     private final ContractCall call;
-    private final Mapping<Fruit> fruitMapping;
     private final Mapping<User> userMapping;
-    private final Mapping<Car> carMapping;
     private final Mapping<Supplier> supplierMapping;
     private final Mapping<Distributor> distributorMapping;
     private final Mapping<Refferal> refMapping;
+
+    private final Mapping<String> testMapping;
 
     public Contract(ContractState contractState, ContractCall call) {
         this.contractState = contractState;
         this.call = call;
         this.userMapping = contractState.getMapping(User.class, USER_MAPPING);
-        this.fruitMapping = contractState.getMapping(Fruit.class, FRUIT_MAPPING_PREFIX);
-        this.carMapping = contractState.getMapping(Car.class, CAR_MAPPING);
         this.supplierMapping = contractState.getMapping(Supplier.class, SUPPLIERS_MAPPING);
         this.distributorMapping = contractState.getMapping(Distributor.class, DISTRIBUTOR_MAPPING);
         this.refMapping = contractState.getMapping(Refferal.class,  REF_MAPPING);
+        this.testMapping = contractState.getMapping(String.class,TEST_MAPPING);
+
     }
 
     @Override
@@ -40,17 +41,10 @@ public class Contract implements IContract {
     }
 
     @Override
-    public void addFruit(Fruit fruit) {
-        this.fruitMapping.put(fruit.getName(), fruit);
-    }
-    @Override
-    public void addUser(User user) {
+    public User addUser(User user) {
+        System.out.println("SOUT" + user);
         this.userMapping.put(user.getLogin(), user);
-    }
-
-    @Override
-    public void addCar(Car car) {
-        this.carMapping.put(car.getModel(), car);
+        return user;
     }
 
     @Override
@@ -63,21 +57,17 @@ public class Contract implements IContract {
         this.distributorMapping.put(distributor.getKey(), distributor);
     }
 
+
     @Override
     public void createRef(Refferal refferal) {
         refferal.setName("2024-" + refferal.getUserLogin() + "-PROFI");
         this.refMapping.put(refferal.getUserLogin(), refferal);
     }
 
-
     @Override
-    public Fruit getFruit(String name) {
-        System.out.println(this.fruitMapping);
-        Optional<Fruit> currentFruit = this.fruitMapping.tryGet(name);
-        System.out.println(currentFruit);
-        return currentFruit.orElseThrow(() -> new IllegalStateException(
-            "Fruit " + name + " doesASDASDASD not exist"
-        ));
-    }
+    public void getUser(String name) {
+        Optional<User> currentUser = this.userMapping.tryGet(name);
+        currentUser.ifPresent(user -> System.out.println(user.getLogin()));
 
+    }
 }

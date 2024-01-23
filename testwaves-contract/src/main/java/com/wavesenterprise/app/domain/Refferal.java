@@ -5,8 +5,7 @@ public class Refferal {
     private String userLogin;
     private int discount;
 
-    public Refferal(String name, String userLogin, int discount) {
-        this.name = name;
+    public Refferal(String userLogin, int discount) {
         this.userLogin = userLogin;
         this.discount = discount;
     }
