@@ -24,7 +24,7 @@ public interface IContract {
     User getUser(@InvokeParam(name = "getUser")String name);
 
     @ContractAction
-    void blockUser(@InvokeParam(name = "blockUser")BlockUser blockUser);
+    void blockUser(@InvokeParam(name = "userName")String name, @InvokeParam(name = "status") boolean status);
 
     @ContractAction
     void addOrder(@InvokeParam(name = "addOrder")Order order);
