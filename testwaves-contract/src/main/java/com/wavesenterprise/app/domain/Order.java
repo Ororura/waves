@@ -10,6 +10,7 @@ public class Order {
     private List<String> regions = new ArrayList<>();
 
     public Order(String productName, String productDesc, String regions) {
+        System.out.println("CONST");
         System.out.println(Arrays.toString(regions.split(",")));
         String[] regionsArray = regions.split(",");
         this.regions = Arrays.asList(regionsArray);
