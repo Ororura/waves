@@ -4,17 +4,15 @@ public class Supplier {
     private String supplierName;
     private String manufacDesc;
     private String regions;
-    private String firstName;
-    private String lastName;
+    private String name;
     private String phoneNumber;
     private String publicKey;
 
-    public Supplier(String supplierName, String manufacDesc, String regions, String firstName, String lastName, String phoneNumber, String publicKey) {
+    public Supplier(String supplierName, String manufacDesc, String regions, String phoneNumber, String name, String publicKey) {
         this.supplierName = supplierName;
         this.manufacDesc = manufacDesc;
         this.regions = regions;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
         this.phoneNumber = phoneNumber;
         this.publicKey = publicKey;
     }
@@ -33,12 +31,8 @@ public class Supplier {
         return regions;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
+    public String getName() {
+        return name;
     }
 
     public String getPhoneNumber() {

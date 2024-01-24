@@ -3,12 +3,10 @@ package com.wavesenterprise.app.app;
 import com.wavesenterprise.app.api.IContract;
 import com.wavesenterprise.app.domain.*;
 import com.wavesenterprise.sdk.contract.api.annotation.ContractHandler;
-import com.wavesenterprise.sdk.contract.api.annotation.InvokeParam;
 import com.wavesenterprise.sdk.contract.api.domain.ContractCall;
 import com.wavesenterprise.sdk.contract.api.state.ContractState;
 import com.wavesenterprise.sdk.contract.api.state.mapping.*;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import static com.wavesenterprise.app.api.IContract.Keys.*;
@@ -23,6 +21,7 @@ public class Contract implements IContract {
     private final Mapping<Distributor> distributorMapping;
     private final Mapping<Refferal> refMapping;
     private final Mapping<Boolean> blockedMapping;
+    private final Mapping<Order> orderMapping;
 
 
     public Contract(ContractState contractState, ContractCall call) {
@@ -33,7 +32,7 @@ public class Contract implements IContract {
         this.distributorMapping = contractState.getMapping(Distributor.class, DISTRIBUTOR_MAPPING);
         this.refMapping = contractState.getMapping(Refferal.class,  REF_MAPPING);
         this.blockedMapping = contractState.getMapping(Boolean.class, BLOCKED_MAPPING);
-
+        this.orderMapping = contractState.getMapping(Order.class, ORDERS_MAPPING);
     }
 
     @Override
@@ -57,7 +56,6 @@ public class Contract implements IContract {
     public void addDist(Distributor distributor) {
         this.distributorMapping.put(distributor.getKey(), distributor);
     }
-
 
     @Override
     public void createRef(Refferal refferal) {
@@ -84,4 +82,10 @@ public class Contract implements IContract {
         currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
     }
 
+    @Override
+    public void addOrder(Order order) {
+        this.orderMapping.put(order.getProductName(), order);
+        Optional<Order> currentOrder = this.orderMapping.tryGet(order.getProductName());
+        currentOrder.ifPresent(orders -> System.out.println("REGIONS: " + orders.getRegions()));
+    }
 }

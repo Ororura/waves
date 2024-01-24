@@ -3,16 +3,14 @@ package com.wavesenterprise.app.domain;
 public class Distributor {
     private String companyName;
     private String suppDesc;
-    private String firstName;
-    private String lastName;
+    private String name;
     private String phone;
     private String key;
 
-    public Distributor(String companyName, String suppDesc, String firstName, String lastName, String phone, String key) {
+    public Distributor(String companyName, String suppDesc, String name, String phone, String key) {
         this.companyName = companyName;
         this.suppDesc = suppDesc;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
         this.phone = phone;
         this.key = key;
     }
@@ -27,17 +25,12 @@ public class Distributor {
         return suppDesc;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
+    public String getPhone() { return phone; }
 
-    public String getPhone() {
-        return phone;
-    }
 
     public String getKey() {
         return key;
