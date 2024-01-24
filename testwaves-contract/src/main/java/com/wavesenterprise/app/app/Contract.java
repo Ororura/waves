@@ -7,6 +7,7 @@ import com.wavesenterprise.sdk.contract.api.domain.ContractCall;
 import com.wavesenterprise.sdk.contract.api.state.ContractState;
 import com.wavesenterprise.sdk.contract.api.state.mapping.*;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.wavesenterprise.app.api.IContract.Keys.*;
@@ -73,14 +74,19 @@ public class Contract implements IContract {
     @Override
     public void blockUser(String name, boolean status, String sender) {
         System.out.println("BLOCK");
-        Optional<String> role = this.userMapping.tryGet(name).get().getRole().describeConstable();
+        String role = this.userMapping.tryGet(sender).get().getRole();
         System.out.println(role);
-        Optional<User> currentUser = this.userMapping.tryGet(name);
-        this.blockedMapping.put(name, status);
-        currentUser.ifPresent(user -> user.setBlocked(status));
-        currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
-        currentUser.ifPresent(user -> this.userMapping.put(user.getLogin(), user));
-        currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
+
+        if(Objects.equals(role, "admin")) {
+            Optional<User> currentUser = this.userMapping.tryGet(name);
+            this.blockedMapping.put(name, status);
+            currentUser.ifPresent(user -> user.setBlocked(status));
+            currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
+            currentUser.ifPresent(user -> this.userMapping.put(user.getLogin(), user));
+            currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
+        } else {
+            System.out.println("У вас нет прав");
+        }
     }
 
     @Override
