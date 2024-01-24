@@ -90,9 +90,11 @@ public class Contract implements IContract {
     }
 
     @Override
-    public void addOrder(Order order) {
-        this.orderMapping.put(order.getProductName(), order);
-        Optional<Order> currentOrder = this.orderMapping.tryGet(order.getProductName());
-        currentOrder.ifPresent(orders -> System.out.println("REGIONS: " + orders.getRegions()));
+    public void addOrder(Order order, String sender) {
+        String role = this.userMapping.tryGet(sender).get().getRole();
+
+        if (role == "dist") {
+            this.orderMapping.put(order.getProductName(), order);
+        }
     }
 }

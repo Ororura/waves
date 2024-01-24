@@ -24,10 +24,12 @@ public interface IContract {
     User getUser(@InvokeParam(name = "getUser")String name);
 
     @ContractAction
-    void blockUser(@InvokeParam(name = "userName")String name, @InvokeParam(name = "status") boolean status, @InvokeParam(name = "sender")String sender);
+    void blockUser(@InvokeParam(name = "userName")String name,
+                   @InvokeParam(name = "status") boolean status,
+                   @InvokeParam(name = "sender")String sender);
 
     @ContractAction
-    void addOrder(@InvokeParam(name = "addOrder")Order order);
+    void addOrder(@InvokeParam(name = "order")Order order, @InvokeParam(name = "sender") String sender);
 
 
 
