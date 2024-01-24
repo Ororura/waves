@@ -71,8 +71,10 @@ public class Contract implements IContract {
     }
 
     @Override
-    public void blockUser(String name, boolean status) {
+    public void blockUser(String name, boolean status, String sender) {
         System.out.println("BLOCK");
+        Optional<String> role = this.userMapping.tryGet(name).get().getRole().describeConstable();
+        System.out.println(role);
         Optional<User> currentUser = this.userMapping.tryGet(name);
         this.blockedMapping.put(name, status);
         currentUser.ifPresent(user -> user.setBlocked(status));
