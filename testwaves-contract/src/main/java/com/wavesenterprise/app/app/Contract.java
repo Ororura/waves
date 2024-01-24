@@ -79,6 +79,7 @@ public class Contract implements IContract {
 
         if(Objects.equals(role, "admin")) {
             Optional<User> currentUser = this.userMapping.tryGet(name);
+            currentUser.get();
             this.blockedMapping.put(name, status);
             currentUser.ifPresent(user -> user.setBlocked(status));
             currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
