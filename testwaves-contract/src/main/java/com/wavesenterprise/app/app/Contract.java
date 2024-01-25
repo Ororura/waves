@@ -7,6 +7,10 @@ import com.wavesenterprise.sdk.contract.api.domain.ContractCall;
 import com.wavesenterprise.sdk.contract.api.state.ContractState;
 import com.wavesenterprise.sdk.contract.api.state.mapping.*;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -18,22 +22,20 @@ public class Contract implements IContract {
     private final ContractState contractState;
     private final ContractCall call;
     private final Mapping<User> userMapping;
-    private final Mapping<Supplier> supplierMapping;
-    private final Mapping<Distributor> distributorMapping;
     private final Mapping<Refferal> refMapping;
     private final Mapping<Boolean> blockedMapping;
     private final Mapping<Order> orderMapping;
+    private final Mapping<Company> companyMapping;
 
 
     public Contract(ContractState contractState, ContractCall call) {
         this.contractState = contractState;
         this.call = call;
         this.userMapping = contractState.getMapping(User.class, USER_MAPPING);
-        this.supplierMapping = contractState.getMapping(Supplier.class, SUPPLIERS_MAPPING);
-        this.distributorMapping = contractState.getMapping(Distributor.class, DISTRIBUTOR_MAPPING);
         this.refMapping = contractState.getMapping(Refferal.class,  REF_MAPPING);
         this.blockedMapping = contractState.getMapping(Boolean.class, BLOCKED_MAPPING);
         this.orderMapping = contractState.getMapping(Order.class, ORDERS_MAPPING);
+        this.companyMapping = contractState.getMapping(Company.class, COMPANY_MAPPING);
     }
 
     @Override
@@ -42,20 +44,17 @@ public class Contract implements IContract {
     }
 
     @Override
-    public User addUser(User user) {
-        System.out.println("SOUT" + user);
+    public void addUser(User user, String regions) {
+        System.out.println("USER" + user);
+        String[] regionsArray = regions.split(",");
+        user.setRegions(Arrays.asList(regionsArray));
         this.userMapping.put(user.getLogin(), user);
-        return user;
-    }
 
-    @Override
-    public void addSupplier(Supplier supplier) {
-        this.supplierMapping.put(supplier.getSupplierName(), supplier);
-    }
+        System.out.println(user.getCompanyName());
+        Optional<Company> currentCompany = this.companyMapping.tryGet("Bober");
 
-    @Override
-    public void addDist(Distributor distributor) {
-        this.distributorMapping.put(distributor.getKey(), distributor);
+        currentCompany.ifPresent(w -> System.out.println(w.getCompanyName()));
+        System.out.println(currentCompany.isEmpty());
     }
 
     @Override
@@ -79,7 +78,6 @@ public class Contract implements IContract {
 
         if(Objects.equals(role, "admin")) {
             Optional<User> currentUser = this.userMapping.tryGet(name);
-            currentUser.get();
             this.blockedMapping.put(name, status);
             currentUser.ifPresent(user -> user.setBlocked(status));
             currentUser.ifPresent(user -> System.out.println(user.isBlocked()));
@@ -91,12 +89,27 @@ public class Contract implements IContract {
     }
 
     @Override
-    public void addOrder(Order order, String sender) {
-        String role = this.userMapping.tryGet(sender).get().getRole();
+    public void addOrder(Order order, String regions, String sender) throws NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        String text = "kek";
+        byte[] hash  = digest.digest(text.getBytes(StandardCharsets.UTF_8));
+        System.out.println(Arrays.toString(hash));
         System.out.println("ORDER");
-        System.out.println(order.getRegions());
-        if (role == "dist") {
+        String role = this.userMapping.tryGet(sender).get().getRole();
+        System.out.println(regions);
+        String[] regionsArray = regions.split(",");
+        if (Objects.equals(role, "dist")) {
+            order.setRegions(Arrays.asList(regionsArray));
             this.orderMapping.put(order.getProductName(), order);
+            System.out.println(role);
+            System.out.println(order.getRegions());
+            System.out.println(order.getRegions().get(0));
+            System.out.println(order.getRegions().size());
         }
+    }
+
+    @Override
+    public void createCompany(Company company) {
+        this.companyMapping.put(company.getCompanyName(), company);
     }
 }

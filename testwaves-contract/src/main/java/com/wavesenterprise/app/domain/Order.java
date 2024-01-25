@@ -9,11 +9,7 @@ public class Order {
     private String productDesc;
     private List<String> regions = new ArrayList<>();
 
-    public Order(String productName, String productDesc, String regions) {
-        System.out.println("CONST");
-        System.out.println(Arrays.toString(regions.split(",")));
-        String[] regionsArray = regions.split(",");
-        this.regions = Arrays.asList(regionsArray);
+    public Order(String productName, String productDesc) {
         this.productName = productName;
         this.productDesc = productDesc;
 
@@ -41,7 +37,7 @@ public class Order {
         this.productDesc = productDesc;
     }
 
-    public void setRegions(String region) {
-        this.regions.add(region);
+    public void setRegions(List<String> region) {
+        this.regions = region;
     }
 }
