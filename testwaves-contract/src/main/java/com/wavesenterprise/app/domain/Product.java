@@ -1,21 +1,34 @@
 package com.wavesenterprise.app.domain;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class Order {
+public class Product {
+    private int id;
     private String productName;
     private String productDesc;
+    private String owner;
     private List<String> regions = new ArrayList<>();
 
-    public Order(String productName, String productDesc) {
+    public Product(String productName, String productDesc, String owner) {
         this.productName = productName;
         this.productDesc = productDesc;
-
+        this.owner = owner;
     }
 
-    public Order(){}
+    public Product(){}
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
 
     public String getProductName() {
         return productName;

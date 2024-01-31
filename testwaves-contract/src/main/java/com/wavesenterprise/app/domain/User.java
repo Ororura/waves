@@ -10,24 +10,31 @@ public class User {
     public boolean blocked = false;
     private String companyName;
     private String suppDesc;
-    private String name;
     private String phone;
-    private String key;
-    private List<String> regions = new ArrayList<>();
+    private int balance;
 
 
-    public User(String login, String password, String role, boolean blocked, String companyName, String suppDesc, String name, String phone, String key) {
+    public User(String login, String password, String role, boolean blocked, String companyName, String suppDesc, String phone, int balance) {
         this.login = login;
         this.password = password;
         this.role = role;
         this.blocked = blocked;
         this.companyName = companyName;
         this.suppDesc = suppDesc;
-        this.name = name;
         this.phone = phone;
-        this.key = key;
+        this.balance = balance;
     }
-    public User() {}
+
+    public User() {
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
 
     public String getLogin() {
         return login;
@@ -61,20 +68,8 @@ public class User {
         return suppDesc;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getPhone() {
         return phone;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public List<String> getRegions() {
-        return regions;
     }
 
     public void setLogin(String login) {
@@ -93,19 +88,10 @@ public class User {
         this.suppDesc = suppDesc;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
 
-    public void setRegions(List<String> regions) {
-        this.regions = regions;
-    }
 }

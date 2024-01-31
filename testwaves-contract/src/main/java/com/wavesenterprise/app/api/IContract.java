@@ -3,39 +3,32 @@ package com.wavesenterprise.app.api;
 import com.wavesenterprise.app.domain.*;
 import com.wavesenterprise.sdk.contract.api.annotation.*;
 
-import java.security.NoSuchAlgorithmException;
-
 public interface IContract {
     @ContractInit
     void init();
 
     @ContractAction
-    void addUser(@InvokeParam(name = "addUser")User user, @InvokeParam(name = "regions")String regions);
-
-    @ContractAction
-    void createRef(@InvokeParam(name = "createRef")Refferal refferal);
-
-    @ContractAction
-    User getUser(@InvokeParam(name = "getUser")String name);
+    void addUser(@InvokeParam(name = "addUser")User user);
 
     @ContractAction
     void blockUser(@InvokeParam(name = "userName")String name,
                    @InvokeParam(name = "status") boolean status,
-                   @InvokeParam(name = "sender")String sender) throws NoSuchAlgorithmException;
+                   @InvokeParam(name = "sender")String sender);
 
     @ContractAction
-    void addOrder(@InvokeParam(name = "order")Order order, @InvokeParam(name = "regions")String regions, @InvokeParam(name = "sender") String sender) throws NoSuchAlgorithmException;
+    void createProduct(@InvokeParam(name = "product")Product product, @InvokeParam(name = "regions")String regions, @InvokeParam(name = "sender") String sender);
 
     @ContractAction
-    void createCompany(@InvokeParam(name = "company")Company company);
+    void createOrderProduction(@InvokeParam(name = "product")OrderProduction orderProduction, @InvokeParam(name = "sender") String sender);
 
     class Keys {
         public static final String CONTRACT_CREATOR = "CONTRACT_CREATOR";
         public static final String USER_MAPPING = "USERS";
-        public static final String REF_MAPPING = "REF";
         public static final String BLOCKED_MAPPING = "BLOCK";
-        public static final String ORDERS_MAPPING = "ORDERS";
         public static final String COMPANY_MAPPING = "COMPANY";
-
+        public static final String USER_PRODUCT_MAPPING = "USERS_PRODUCT";
+        public static final String ADMIN_ROLE = "admin";
+        public static final String DISTRIBUTOR_ROLE = "distributor";
+        public static final String ORDER_PRODUCTION = "ORDER_PRODUCTION";
     }
 }
