@@ -1,5 +1,6 @@
 package com.wavesenterprise.app.app;
 
+import com.google.common.hash.Hashing;
 import com.wavesenterprise.app.api.IContract;
 import com.wavesenterprise.app.domain.*;
 import com.wavesenterprise.sdk.contract.api.annotation.ContractHandler;
@@ -7,6 +8,7 @@ import com.wavesenterprise.sdk.contract.api.domain.ContractCall;
 import com.wavesenterprise.sdk.contract.api.state.ContractState;
 import com.wavesenterprise.sdk.contract.api.state.mapping.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static com.wavesenterprise.app.api.IContract.Keys.*;
@@ -58,6 +60,7 @@ public class Contract implements IContract {
     @Override
     public void createProduct(Product product, String regions, String sender) {
         String role = this.userMapping.tryGet(sender).get().getRole();
+        System.out.println("test");
         String[] regionsArray = regions.split(",");
         if (Objects.equals(role, DISTRIBUTOR_ROLE)) {
             Optional<List> currentUsersProducts = this.usersProductMapping.tryGet(sender);
@@ -75,18 +78,14 @@ public class Contract implements IContract {
 
     @Override
     public void createOrderProduction(OrderProduction orderProduction, String sender) {
-        System.out.println("ORDER");
         Optional<List> currentOrderProduction = this.orderProductionMapping.tryGet(sender);
+        System.out.println(Hashing.sha256().hashString("YaBober", StandardCharsets.UTF_8));
         if (!currentOrderProduction.isPresent()) {
-            System.out.println("ORDER1");
             List<OrderProduction> orderList = new ArrayList<>();
-            currentOrderProduction.ifPresent(el -> {
-                orderProduction.setId(el.size());
-                orderList.add(orderProduction);
-                this.orderProductionMapping.put(sender, orderList);
-            });
+            orderProduction.setId(0);
+            orderList.add(orderProduction);
+            this.orderProductionMapping.put(sender, orderList);
         } else {
-            System.out.println("ORDER2");
             currentOrderProduction.ifPresent(el -> {
                 orderProduction.setId(el.size());
                 el.add(orderProduction);

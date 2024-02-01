@@ -67,7 +67,7 @@ subprojects {
             dependency("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatabindVersion")
             dependency("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonKotlinVersion")
             dependency("net.java.dev.jna:jna:$jnaVersion")
-
+            dependency("com.google.guava:guava:33.0.0-jre")
             dependency("org.postgresql:postgresql:$postgresVersion")
             dependency("org.springdoc:springdoc-openapi-ui:$springdocVersion")
         }
