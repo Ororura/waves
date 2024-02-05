@@ -3,41 +3,32 @@ package com.wavesenterprise.app.domain;
 
 public class OrderProduction {
     private int id;
-    private String productName;
     private int amount;
-    private String status;
+    private String customer;
 
-    public OrderProduction(String productName, int amount, String status) {
-        this.productName = productName;
+    public OrderProduction(int id, int amount, String customer) {
+        this.id = id;
         this.amount = amount;
-        this.status = status;
+        this.customer = customer;
     }
 
     public OrderProduction() {
-    }
-
-    public String getProductName() {
-        return productName;
     }
 
     public int getAmount() {
         return amount;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public String getCustomer() {
+        return customer;
     }
 
     public void setAmount(int amount) {
         this.amount = amount;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setCustomer(String customer) {
+        this.customer = customer;
     }
 
     public int getId() {

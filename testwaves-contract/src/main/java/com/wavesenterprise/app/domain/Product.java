@@ -7,16 +7,15 @@ public class Product {
     private int id;
     private String productName;
     private String productDesc;
-    private String owner;
     private List<String> regions = new ArrayList<>();
 
-    public Product(String productName, String productDesc, String owner) {
+    public Product(String productName, String productDesc) {
         this.productName = productName;
         this.productDesc = productDesc;
-        this.owner = owner;
     }
 
-    public Product(){}
+    public Product() {
+    }
 
     public int getId() {
         return id;
@@ -24,10 +23,6 @@ public class Product {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getOwner() {
-        return owner;
     }
 
     public String getProductName() {
