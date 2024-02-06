@@ -3,11 +3,16 @@ package com.wavesenterprise.app.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.wavesenterprise.app.api.IContract.Keys.ON_CHECK;
+
 public class Product {
-    private int id;
     private String productName;
     private String productDesc;
+    private String status = ON_CHECK;
+    private int maxCount;
+    private int minCount;
     private List<String> regions = new ArrayList<>();
+    private List<String> distributors = new ArrayList<>();
 
     public Product(String productName, String productDesc) {
         this.productName = productName;
@@ -17,12 +22,36 @@ public class Product {
     public Product() {
     }
 
-    public int getId() {
-        return id;
+    public List<String> getDistributors() {
+        return distributors;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void addDistributors(String distributors) {
+        this.distributors.add(distributors);
+    }
+
+    public int getMaxCount() {
+        return maxCount;
+    }
+
+    public int getMinCount() {
+        return minCount;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setMaxCount(int maxCount) {
+        this.maxCount = maxCount;
+    }
+
+    public void setMinCount(int minCount) {
+        this.minCount = minCount;
     }
 
     public String getProductName() {
