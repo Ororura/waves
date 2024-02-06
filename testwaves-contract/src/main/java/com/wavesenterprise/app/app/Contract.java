@@ -34,11 +34,11 @@ public class Contract implements IContract {
         this.contractState = contractState;
         this.call = call;
         this.userMapping = contractState.getMapping(User.class, USER_MAPPING);
-        this.usersProductMapping = contractState.getMapping(new TypeReference<List<Product>>() {
+        this.usersProductMapping = contractState.getMapping(new TypeReference<>() {
         }, USER_PRODUCT_MAPPING);
         this.orderProductionMapping = contractState.getMapping(new TypeReference<>() {
         }, ORDER_PRODUCTION);
-        this.newUsersMapping = contractState.getMapping(new TypeReference<List<User>>() {
+        this.newUsersMapping = contractState.getMapping(new TypeReference<>() {
         }, NEW_USERS);
         this.companyMapping = contractState.getMapping(Company.class, COMPANY_MAPPING);
     }
@@ -51,7 +51,7 @@ public class Contract implements IContract {
     }
 
     @Override
-    public void approveCart(String company, int id, boolean status, int min, int max, String distributors, String sender) {
+    public void approveCard(String company, int id, boolean status, int min, int max, String distributors, String sender) {
         this.userMapping.tryGet(sender).ifPresent(owner ->
                 {
                     if (!Objects.equals(owner.getRole(), ADMIN_ROLE)) {
@@ -72,22 +72,26 @@ public class Contract implements IContract {
                             });
                         }
                     } else {
-                        throw new IllegalStateException("Вы не администратор");
+                        throw new IllegalStateException("Вы не оператор");
                     }
                 }
         );
     }
 
     @Override
-    public void createShopCart(Product product, String regions, String sender) {
-        this.userMapping.tryGet(sender).ifPresent(user -> {
-            this.companyMapping.tryGet(user.getCompanyName()).ifPresent(company -> {
-                        product.setRegions(Arrays.asList(regions.split(",")));
-                        company.addCompanyShop(product);
-                        this.companyMapping.put(user.getCompanyName(), company);
-                    }
-            );
-        });
+    public void createShopCard(Product product, String regions, String sender) {
+        if (this.userMapping.tryGet(sender).get().getRole().equals(SUPPLIER_ROLE)) {
+            this.userMapping.tryGet(sender).ifPresent(user -> {
+                this.companyMapping.tryGet(user.getCompanyName()).ifPresent(company -> {
+                            product.setRegions(Arrays.asList(regions.split(",")));
+                            company.addCompanyShop(product);
+                            this.companyMapping.put(user.getCompanyName(), company);
+                        }
+                );
+            });
+        } else {
+            throw new IllegalStateException("Только поставщик может добавлять карточки");
+        }
     }
 
     @Override
@@ -96,7 +100,7 @@ public class Contract implements IContract {
             if (status) {
                 this.newUsersMapping.tryGet("USERS").ifPresent(el -> {
                     addUser(el.get(id));
-                    if (this.companyMapping.tryGet(el.get(id).getCompanyName()).isEmpty() && !Objects.equals(el.get(id).getRole(), USER_ROLE)) {
+                    if (el.get(id).getCompanyName() != null && this.companyMapping.tryGet(el.get(id).getCompanyName()).isEmpty() && !Objects.equals(el.get(id).getRole(), USER_ROLE)) {
                         List<String> users = new ArrayList<>();
                         users.add(el.get(id).getLogin());
                         this.companyMapping.put(el.get(id).getCompanyName(), new Company(el.get(id).getCompanyName(), users));
@@ -111,7 +115,7 @@ public class Contract implements IContract {
                 });
             }
         } else {
-            throw new IllegalStateException("Вы не администратор");
+            throw new IllegalStateException("Вы не оператор");
         }
     }
 
@@ -223,7 +227,7 @@ public class Contract implements IContract {
                 );
             }
         } else {
-            throw new IllegalStateException("Вы не дистрибутор или администратор");
+            throw new IllegalStateException("Вы не дистрибутор или оператор");
         }
     }
 }
