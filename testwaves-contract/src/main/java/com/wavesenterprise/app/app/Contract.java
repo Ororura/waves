@@ -151,10 +151,11 @@ public class Contract implements IContract {
         }
     }
 
+    /*Возможно отвалился, а возможно нет (❁´◡`❁) ПРОВЕРЬ*/
     @Override
-    public void createOrderProduction(OrderProduction orderProduction, String company) {
+    public void createOrderProduction(OrderProduction orderProduction) {
         this.orderProductionMapping.tryGet(orderProduction.getCustomer()).ifPresent(order -> {
-            this.companyMapping.tryGet(company).ifPresent(shopMap -> {
+            this.companyMapping.tryGet(orderProduction.getCompany()).ifPresent(shopMap -> {
                 boolean found = false;
                 for (String element : shopMap.getCompanyShop().get(orderProduction.getId()).getRegions()) {
                     if (this.userMapping.tryGet(orderProduction.getCustomer()).get().getRegion().equals(element)) {
@@ -166,7 +167,7 @@ public class Contract implements IContract {
                     throw new IllegalStateException("В ваш регион не доставляется");
                 }
             });
-            orderProduction.setShop(company);
+            orderProduction.setCompany(orderProduction.getCompany());
             order.add(orderProduction);
             this.orderProductionMapping.put(orderProduction.getCustomer(), order);
         });
@@ -195,19 +196,20 @@ public class Contract implements IContract {
         });
     }
 
+    //TODO: ПРОВЕРИТЬ, А РАБОТАЕТ ЛИ ОНО? (‾◡◝) 🥸
     @Override
-    public void processOrder(String requester, int id, int amount, String date, String sender) {
+    public void formatOrder(String requester, int id, int amount, String date, String sender) {
         if (this.userMapping.tryGet(sender).get().getRole().equals(ADMIN_ROLE) || this.userMapping.tryGet(sender).get().getRole().equals(DISTRIBUTOR_ROLE)) {
             this.orderProductionMapping.tryGet(requester).ifPresent(order -> {
                 boolean found = false;
-                for (String element : this.usersProductMapping.tryGet(order.get(id).getShop()).get().get(order.get(id).getId()).getRegions()) {
+                for (String element : this.companyMapping.tryGet(order.get(id).getCompany()).get().getCompanyShop().get(order.get(id).getId()).getRegions()) {
                     if (this.userMapping.tryGet(requester).get().getRegion().equals(element)) {
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
-                    throw new IllegalStateException("В ваш регион не доставляется");
+                    throw new IllegalStateException("Вы не можете оформить этот заказ");
                 }
             });
 

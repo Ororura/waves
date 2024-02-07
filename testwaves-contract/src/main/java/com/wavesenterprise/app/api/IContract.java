@@ -17,7 +17,7 @@ public interface IContract {
 
 
     @ContractAction
-    void createOrderProduction(@InvokeParam(name = "product") OrderProduction orderProduction, @InvokeParam(name = "company") String company);
+    void createOrderProduction(@InvokeParam(name = "product") OrderProduction orderProduction);
 
     @ContractAction
     void transferProduct(@InvokeParam(name = "id") int id, @InvokeParam(name = "to") String to, @InvokeParam(name = "from") String from);
@@ -32,7 +32,7 @@ public interface IContract {
     void approveCreateUser(@InvokeParam(name = "id") int id, @InvokeParam(name = "status") boolean status, @InvokeParam(name = "sender")String sender);
 
     @ContractAction
-    void processOrder(@InvokeParam(name = "requester") String requester, @InvokeParam(name = "id") int id, @InvokeParam(name = "amount") int amount, @InvokeParam(name = "date") String date, @InvokeParam(name = "sender") String sender);
+    void formatOrder(@InvokeParam(name = "requester") String requester, @InvokeParam(name = "id") int id, @InvokeParam(name = "amount") int amount, @InvokeParam(name = "date") String date, @InvokeParam(name = "sender") String sender);
 
     @ContractAction
     void createShopCard(@InvokeParam(name = "product") Product product, @InvokeParam(name = "regions") String regions, @InvokeParam(name = "sender") String sender);

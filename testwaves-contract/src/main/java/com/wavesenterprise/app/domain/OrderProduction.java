@@ -8,24 +8,24 @@ public class OrderProduction {
     private String date;
     private int price;
     private String customer;
-    private String shop;
+    private String company;
     private String status = STATUS_PREPARING;
 
-    public OrderProduction(int id, int amount, String date, int price, String customer, String shop, String status) {
+    public OrderProduction(int id, int amount, String date, int price, String customer, String company, String status) {
         this.id = id;
         this.amount = amount;
         this.date = date;
         this.price = price;
         this.customer = customer;
-        this.shop = shop;
+        this.company = company;
         this.status = status;
     }
 
     public OrderProduction() {
     }
 
-    public String getShop() {
-        return shop;
+    public String getCompany() {
+        return company;
     }
 
     public int getAmount() {
@@ -48,8 +48,8 @@ public class OrderProduction {
         this.customer = customer;
     }
 
-    public void setShop(String shop) {
-        this.shop = shop;
+    public void setCompany(String company) {
+        this.company = company;
     }
 
     public int getId() {
