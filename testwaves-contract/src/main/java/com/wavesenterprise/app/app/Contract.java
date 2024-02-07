@@ -9,7 +9,6 @@ import com.wavesenterprise.sdk.contract.api.state.ContractState;
 import com.wavesenterprise.sdk.contract.api.state.TypeReference;
 import com.wavesenterprise.sdk.contract.api.state.mapping.*;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.wavesenterprise.app.api.IContract.Keys.*;
@@ -54,7 +53,7 @@ public class Contract implements IContract {
     public void approveCard(String company, int id, boolean status, int min, int max, String distributors, String sender) {
         this.userMapping.tryGet(sender).ifPresent(owner ->
                 {
-                    if (!Objects.equals(owner.getRole(), ADMIN_ROLE)) {
+                    if (Objects.equals(owner.getRole(), ADMIN_ROLE)) {
                         if (status) {
                             this.companyMapping.tryGet(company).ifPresent(elCompany -> {
                                 elCompany.getCompanyShop().get(id).setMaxCount(max);
@@ -151,13 +150,14 @@ public class Contract implements IContract {
         }
     }
 
-    /*Возможно отвалился, а возможно нет (❁´◡`❁) ПРОВЕРЬ*/
     @Override
     public void createOrderProduction(OrderProduction orderProduction) {
         this.orderProductionMapping.tryGet(orderProduction.getCustomer()).ifPresent(order -> {
             this.companyMapping.tryGet(orderProduction.getCompany()).ifPresent(shopMap -> {
                 boolean found = false;
                 for (String element : shopMap.getCompanyShop().get(orderProduction.getId()).getRegions()) {
+                    System.out.println(element);
+                    System.out.println(this.userMapping.tryGet(orderProduction.getCustomer()).get().getRegion());
                     if (this.userMapping.tryGet(orderProduction.getCustomer()).get().getRegion().equals(element)) {
                         found = true;
                         break;
@@ -173,37 +173,52 @@ public class Contract implements IContract {
         });
     }
 
+    //TODO: Исправить перевод трансфера. При добавлении продукта, product пустой.
     @Override
-    public void transferProduct(int id, String to, String from) {
-        this.usersProductMapping.tryGet(from).ifPresent(el -> this.usersProductMapping.tryGet(to).ifPresent(prod -> {
-            prod.add((Product) el);
-            this.usersProductMapping.put(to, prod);
-            el.remove(id);
-            this.usersProductMapping.put(from, el);
-        }));
+    public void transferProduct(int orderId, String to, String from) {
+        System.out.println("TESTT");
+        this.companyMapping.tryGet(from).ifPresent(company -> {
+            System.out.println("TESTT@");
+            this.userMapping.tryGet(to).ifPresent(user -> {
+                System.out.println("TESSTSTST");
+                System.out.println(company.getCompanyShop().get(0).getProductName());
+                System.out.println(this.orderProductionMapping.get(to).get(orderId).getId());
+                user.addProductList(company.getCompanyShop().get(0));
+//                user.addProductList(company.getCompanyShop().get(this.orderProductionMapping.get(to).get(orderId).getId()));
+                System.out.println("ASIDJLIJD");
+                this.userMapping.put(to, user);
+            });
+        });
     }
 
     @Override
-    public void approveTransfer(String user, int order, boolean status, String sender) {
-        this.orderProductionMapping.tryGet(user).ifPresent(el -> {
+    public void acceptOrder(int order, boolean status, String sender) {
+        this.orderProductionMapping.tryGet(sender).ifPresent(el -> {
+            System.out.println("WORK");
             if (status) {
+                System.out.println("WORK2");
                 OrderProduction currentOrder = el.get(order);
-                transferProduct(currentOrder.getId(), currentOrder.getCustomer(), sender);
+                System.out.println(currentOrder.getId() + "ID" + sender + "sender" + currentOrder.getCompany() + "company");
+                transferProduct(currentOrder.getId(), sender, currentOrder.getCompany());
+                System.out.println("WORK3");
+
             } else {
                 el.remove(order);
-                this.orderProductionMapping.put(user, el);
+                this.orderProductionMapping.put(sender, el);
             }
         });
     }
 
-    //TODO: ПРОВЕРИТЬ, А РАБОТАЕТ ЛИ ОНО? (‾◡◝) 🥸
+    //TODO: Если вводить корректирующие данные для заказа, то проверка попадает в else, а не if.
     @Override
     public void formatOrder(String requester, int id, int amount, String date, String sender) {
         if (this.userMapping.tryGet(sender).get().getRole().equals(ADMIN_ROLE) || this.userMapping.tryGet(sender).get().getRole().equals(DISTRIBUTOR_ROLE)) {
+            System.out.println("WORKING");
             this.orderProductionMapping.tryGet(requester).ifPresent(order -> {
                 boolean found = false;
                 for (String element : this.companyMapping.tryGet(order.get(id).getCompany()).get().getCompanyShop().get(order.get(id).getId()).getRegions()) {
                     if (this.userMapping.tryGet(requester).get().getRegion().equals(element)) {
+                        System.out.println("FOUND");
                         found = true;
                         break;
                     }
@@ -215,11 +230,13 @@ public class Contract implements IContract {
 
             //Если дистрибьютор не меняет данные в заказе, то в запросе отправляется -1
             if (amount != -1 || !Objects.equals(date, "-1")) {
+                System.out.println("IF TEST");
                 this.orderProductionMapping.tryGet(requester).ifPresent(order -> {
                     order.get(id).setStatus(STATUS_PROCESSING);
                     this.orderProductionMapping.put(requester, order);
                 });
             } else {
+                System.out.println("ELSE TEST");
                 this.orderProductionMapping.tryGet(requester).ifPresent(order -> {
                             order.get(id).setStatus(STATUS_PROCESSING);
                             order.get(id).setDate(date);

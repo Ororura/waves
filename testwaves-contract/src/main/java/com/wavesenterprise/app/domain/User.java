@@ -14,6 +14,7 @@ public class User {
     private int balance;
     private String region;
     private List<String> supplyRegions;
+    private List<Product> productList;
 
 
     public User(String login, String password, String role, boolean blocked, String companyName, String suppDesc, String phone, int balance, String region) {
@@ -33,6 +34,14 @@ public class User {
 
     public int getBalance() {
         return balance;
+    }
+
+    public List<Product> getProductList() {
+        return productList;
+    }
+
+    public void addProductList(Product productList) {
+        this.productList.add(productList);
     }
 
     public List<String> getSupplyRegions() {

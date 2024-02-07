@@ -11,14 +11,13 @@ public class OrderProduction {
     private String company;
     private String status = STATUS_PREPARING;
 
-    public OrderProduction(int id, int amount, String date, int price, String customer, String company, String status) {
+    public OrderProduction(int id, int amount, String date, int price, String customer, String company) {
         this.id = id;
         this.amount = amount;
         this.date = date;
         this.price = price;
         this.customer = customer;
         this.company = company;
-        this.status = status;
     }
 
     public OrderProduction() {

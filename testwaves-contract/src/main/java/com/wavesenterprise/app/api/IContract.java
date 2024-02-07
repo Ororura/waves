@@ -23,7 +23,7 @@ public interface IContract {
     void transferProduct(@InvokeParam(name = "id") int id, @InvokeParam(name = "to") String to, @InvokeParam(name = "from") String from);
 
     @ContractAction
-    void approveTransfer(@InvokeParam(name = "user") String user, @InvokeParam(name = "order") int order, @InvokeParam(name = "status") boolean status, @InvokeParam(name = "sender") String sender);
+    void acceptOrder(@InvokeParam(name = "order") int order, @InvokeParam(name = "status") boolean status, @InvokeParam(name = "sender") String sender);
 
     @ContractAction
     void createAccount(@InvokeParam(name = "user") User user, String supplyRegions);
