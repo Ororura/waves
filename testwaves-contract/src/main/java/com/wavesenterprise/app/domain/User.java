@@ -3,6 +3,8 @@ package com.wavesenterprise.app.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.wavesenterprise.app.api.IContract.Keys.ON_CHECK;
+
 public class User {
     private String login;
     private String password;
@@ -13,15 +15,14 @@ public class User {
     private String phone;
     private int balance;
     private String region;
+    private String status = ON_CHECK;
     private List<String> supplyRegions;
-    private List<Product> productList;
 
 
-    public User(String login, String password, String role, boolean blocked, String companyName, String suppDesc, String phone, int balance, String region) {
+    public User(String login, String password, String role, String companyName, String suppDesc, String phone, int balance, String region) {
         this.login = login;
         this.password = password;
         this.role = role;
-        this.blocked = blocked;
         this.companyName = companyName;
         this.suppDesc = suppDesc;
         this.phone = phone;
@@ -36,12 +37,12 @@ public class User {
         return balance;
     }
 
-    public List<Product> getProductList() {
-        return productList;
+    public String getStatus() {
+        return status;
     }
 
-    public void addProductList(Product productList) {
-        this.productList.add(productList);
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public List<String> getSupplyRegions() {

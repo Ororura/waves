@@ -54,6 +54,7 @@ public interface IContract {
         public static final String STATUS_PREPARING = "preparing";
         public static final String STATUS_PROCESSING = "processing";
         public static final String STATUS_ACCEPTED = "accepted";
+        public static final String STATUS_DENIED = "denied";
         public static final String ON_CHECK = "onCheck";
     }
 }
