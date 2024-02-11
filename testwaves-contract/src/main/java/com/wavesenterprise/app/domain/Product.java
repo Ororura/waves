@@ -8,15 +8,17 @@ import static com.wavesenterprise.app.api.IContract.Keys.ON_CHECK;
 public class Product {
     private String productName;
     private String productDesc;
+    private String companyName;
     private String status = ON_CHECK;
     private int maxCount;
     private int minCount;
     private List<String> regions = new ArrayList<>();
     private List<String> distributors = new ArrayList<>();
 
-    public Product(String productName, String productDesc) {
+    public Product(String productName, String productDesc, String companyName) {
         this.productName = productName;
         this.productDesc = productDesc;
+        this.companyName = companyName;
     }
 
     public Product() {
@@ -28,6 +30,14 @@ public class Product {
 
     public void addDistributors(String distributors) {
         this.distributors.add(distributors);
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     public int getMaxCount() {

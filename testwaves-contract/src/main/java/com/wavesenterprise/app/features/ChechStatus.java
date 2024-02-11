@@ -24,8 +24,14 @@ public class ChechStatus {
     }
 
     public static void onlySupplier(User user) {
-        if(!user.getRole().equals(SUPPLIER_ROLE)) {
+        if (!user.getRole().equals(SUPPLIER_ROLE)) {
             throw new IllegalStateException("Вы не дистрибутор");
+        }
+    }
+
+    public static void acceptedStatus(boolean status) {
+        if (!status) {
+            throw new IllegalStateException("Вы отменили подтверждение");
         }
     }
 }

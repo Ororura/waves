@@ -24,10 +24,12 @@ public class Contract implements IContract {
     private final Mapping<List<OrderProduction>> orderProductionMapping;
     private final Mapping<List<User>> newUsersMapping;
     private final Mapping<Company> companyMapping;
+    private final Mapping<List<Product>> onCheckProductCardMapping;
 
     List<Product> productList = new ArrayList<>();
     List<OrderProduction> orderList = new ArrayList<>();
     List<User> newUserList = new ArrayList<>();
+    List<Product> onCheckProductCardList = new ArrayList<>();
 
 
     public Contract(ContractState contractState, ContractCall call) {
@@ -41,45 +43,49 @@ public class Contract implements IContract {
         this.newUsersMapping = contractState.getMapping(new TypeReference<>() {
         }, NEW_USERS);
         this.companyMapping = contractState.getMapping(Company.class, COMPANY_MAPPING);
+        this.onCheckProductCardMapping = contractState.getMapping(new TypeReference<>() {
+        }, ON_CHECK);
     }
 
     @Override
     public void init() {
         contractState.put(CONTRACT_CREATOR, call.getCaller());
         this.newUsersMapping.put("USERS", this.newUserList);
+        this.onCheckProductCardMapping.put(PRODUCT_MAPPING, this.onCheckProductCardList);
         addUser(new User("admin", "admin", "admin", null, null, null, 0, null));
     }
 
     @Override
     public void approveCard(String company, int id, boolean status, int min, int max, String distributors, String sender) {
         ChechStatus.onlyAdmin(this.userMapping.tryGet(sender).get());
-        if (status) {
-            this.companyMapping.tryGet(company).ifPresent(elCompany -> {
-                elCompany.getCompanyShop().get(id).setMaxCount(max);
-                elCompany.getCompanyShop().get(id).setMinCount(min);
-                elCompany.getCompanyShop().get(id).setStatus(STATUS_ACCEPTED);
-                for (String user : distributors.split(",")) {
-                    this.userMapping.tryGet(user).ifPresent(userMap -> {
-                        if (HashComponent.hasCommonElement(userMap.getSupplyRegions(), elCompany.getCompanyShop().get(id).getRegions())) {
-                            elCompany.getCompanyShop().get(id).addDistributors(user);
-                            this.companyMapping.put(company, elCompany);
-                        }
-                    });
-                }
-            });
-        }
+        ChechStatus.acceptedStatus(status);
+        this.onCheckProductCardMapping.tryGet(PRODUCT_MAPPING).ifPresent(card -> {
+            card.get(id).setMaxCount(max);
+            card.get(id).setMinCount(min);
+            for (String user : distributors.split(",")) {
+                this.userMapping.tryGet(user).ifPresent(userMap -> {
+                    if (HashComponent.hasCommonElement(userMap.getSupplyRegions(), card.get(id).getRegions())) {
+                        card.get(id).addDistributors(user);
+                        card.get(id).setStatus(STATUS_APPROVED);
+                        this.companyMapping.tryGet(userMap.getCompanyName()).ifPresent(companyMap -> {
+                            companyMap.addCompanyShop(card.get(id));
+                            this.companyMapping.put(company, companyMap);
+                        });
+                    }
+                });
+            }
+        });
+
     }
 
     @Override
     public void createShopCard(Product product, String regions, String sender) {
         ChechStatus.onlySupplier(this.userMapping.tryGet(sender).get());
-        this.userMapping.tryGet(sender).ifPresent(user -> {
-            this.companyMapping.tryGet(user.getCompanyName()).ifPresent(company -> {
-                        product.setRegions(Arrays.asList(regions.split(",")));
-                        company.addCompanyShop(product);
-                        this.companyMapping.put(user.getCompanyName(), company);
-                    }
-            );
+        this.onCheckProductCardMapping.tryGet(PRODUCT_MAPPING).ifPresent(card -> {
+            product.setRegions(Arrays.asList(regions.split(",")));
+            product.setCompanyName(this.userMapping.tryGet(sender).get().getCompanyName());
+            card.add(product);
+            this.onCheckProductCardMapping.put(PRODUCT_MAPPING, card);
         });
     }
 
