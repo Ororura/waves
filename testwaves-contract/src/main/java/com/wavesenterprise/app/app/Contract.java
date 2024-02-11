@@ -67,6 +67,7 @@ public class Contract implements IContract {
                     if (HashComponent.hasCommonElement(userMap.getSupplyRegions(), card.get(id).getRegions())) {
                         card.get(id).addDistributors(user);
                         card.get(id).setStatus(STATUS_APPROVED);
+                        this.onCheckProductCardMapping.put(PRODUCT_MAPPING, card);
                         this.companyMapping.tryGet(userMap.getCompanyName()).ifPresent(companyMap -> {
                             companyMap.addCompanyShop(card.get(id));
                             this.companyMapping.put(company, companyMap);
