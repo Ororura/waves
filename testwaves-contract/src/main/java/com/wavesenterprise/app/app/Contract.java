@@ -90,7 +90,7 @@ public class Contract implements IContract {
         if (status) {
             this.newUsersMapping.tryGet("USERS").ifPresent(el -> {
                 addUser(el.get(id));
-                if (el.get(id).getCompanyName() != null && this.companyMapping.tryGet(el.get(id).getCompanyName()).isEmpty() && !Objects.equals(el.get(id).getRole(), USER_ROLE)) {
+                if (el.get(id).getCompanyName() != null && !Objects.equals(el.get(id).getRole(), USER_ROLE)) {
                     List<String> users = new ArrayList<>();
                     users.add(el.get(id).getLogin());
                     this.companyMapping.put(el.get(id).getCompanyName(), new Company(el.get(id).getCompanyName(), users));
