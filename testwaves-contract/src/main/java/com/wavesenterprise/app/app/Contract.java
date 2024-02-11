@@ -30,6 +30,7 @@ public class Contract implements IContract {
     List<OrderProduction> orderList = new ArrayList<>();
     List<User> newUserList = new ArrayList<>();
     List<Product> onCheckProductCardList = new ArrayList<>();
+    List<OrderProduction> orderProductionsList = new ArrayList<>();
 
 
     public Contract(ContractState contractState, ContractCall call) {
@@ -45,6 +46,7 @@ public class Contract implements IContract {
         this.companyMapping = contractState.getMapping(Company.class, COMPANY_MAPPING);
         this.onCheckProductCardMapping = contractState.getMapping(new TypeReference<>() {
         }, ON_CHECK);
+
     }
 
     @Override
@@ -52,6 +54,7 @@ public class Contract implements IContract {
         contractState.put(CONTRACT_CREATOR, call.getCaller());
         this.newUsersMapping.put("USERS", this.newUserList);
         this.onCheckProductCardMapping.put(PRODUCT_MAPPING, this.onCheckProductCardList);
+        this.orderProductionMapping.put(ORDER_PRODUCT, orderProductionsList);
         addUser(new User("admin", "admin", "admin", null, null, null, 0, null));
     }
 
@@ -129,7 +132,6 @@ public class Contract implements IContract {
     public void addUser(User user) {
         this.userMapping.put(user.getLogin(), user);
         this.usersProductMapping.put(user.getLogin(), this.productList);
-        this.orderProductionMapping.put(user.getLogin(), this.orderList);
     }
 
     @Override
@@ -144,7 +146,7 @@ public class Contract implements IContract {
     @Override
     public void createOrderProduction(OrderProduction orderProduction) {
         ChechStatus.isBlocked(this.userMapping.tryGet(orderProduction.getCustomer()).get());
-        this.orderProductionMapping.tryGet(orderProduction.getCustomer()).ifPresent(order -> {
+        this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(order -> {
             this.companyMapping.tryGet(orderProduction.getCompany()).ifPresent(shopMap -> {
                 boolean found = false;
                 for (String element : shopMap.getCompanyShop().get(orderProduction.getId()).getRegions()) {
@@ -159,7 +161,7 @@ public class Contract implements IContract {
             });
             orderProduction.setCompany(orderProduction.getCompany());
             order.add(orderProduction);
-            this.orderProductionMapping.put(orderProduction.getCustomer(), order);
+            this.orderProductionMapping.put(ORDER_PRODUCT, order);
         });
     }
 
@@ -170,7 +172,7 @@ public class Contract implements IContract {
                 this.usersProductMapping.tryGet(to).ifPresent(products -> {
                     products.add(company.getCompanyShop().
                             get(this.orderProductionMapping.
-                                    get(to).
+                                    get(ORDER_PRODUCT).
                                     get(orderId).
                                     getId()));
                     this.usersProductMapping.put(to, products);
@@ -182,29 +184,29 @@ public class Contract implements IContract {
 
     @Override
     public void acceptOrder(int order, boolean status, String sender) {
-        this.orderProductionMapping.tryGet(sender).ifPresent(el -> {
+        this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(el -> {
             if (status) {
                 OrderProduction currentOrder = el.get(order);
                 transferProduct(currentOrder.getId(), sender, currentOrder.getCompany());
-                el.remove(order);
-                this.orderProductionMapping.put(sender, el);
+                el.get(order).setStatus(STATUS_ACCEPTED);
+                this.orderProductionMapping.put(ORDER_PRODUCT, el);
 
             } else {
-                el.remove(order);
-                this.orderProductionMapping.put(sender, el);
+                el.get(order).setStatus(STATUS_DENIED);
+                this.orderProductionMapping.put(ORDER_PRODUCT, el);
             }
         });
     }
 
     //TODO: Если вводить корректирующие данные для заказа, то проверка попадает в else, а не if.
     @Override
-    public void formatOrder(String requester, int id, int amount, String date, String sender) {
+    public void formatOrder(int id, int amount, String date, String sender) {
         ChechStatus.onlySupplierOrAdmin(this.userMapping.tryGet(sender).get());
         System.out.println("WORKING");
-        this.orderProductionMapping.tryGet(requester).ifPresent(order -> {
+        this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(order -> {
             boolean found = false;
-            for (String element : this.companyMapping.tryGet(order.get(id).getCompany()).get().getCompanyShop().get(order.get(id).getId()).getRegions()) {
-                if (this.userMapping.tryGet(requester).get().getRegion().equals(element)) {
+            for (String element : this.companyMapping.tryGet(ORDER_PRODUCT).get().getCompanyShop().get(order.get(id).getId()).getRegions()) {
+                if (this.userMapping.tryGet(ORDER_PRODUCT).get().getRegion().equals(element)) {
                     System.out.println("FOUND");
                     found = true;
                     break;
@@ -218,17 +220,17 @@ public class Contract implements IContract {
         //Если дистрибьютор не меняет данные в заказе, то в запросе отправляется -1
         if (amount != -1 || !Objects.equals(date, "-1")) {
             System.out.println("IF TEST");
-            this.orderProductionMapping.tryGet(requester).ifPresent(order -> {
+            this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(order -> {
                 order.get(id).setStatus(STATUS_PROCESSING);
-                this.orderProductionMapping.put(requester, order);
+                this.orderProductionMapping.put(ORDER_PRODUCT, order);
             });
         } else {
             System.out.println("ELSE TEST");
-            this.orderProductionMapping.tryGet(requester).ifPresent(order -> {
+            this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(order -> {
                         order.get(id).setStatus(STATUS_PROCESSING);
                         order.get(id).setDate(date);
                         order.get(id).setPrice(amount);
-                        this.orderProductionMapping.put(requester, order);
+                        this.orderProductionMapping.put(ORDER_PRODUCT, order);
                     }
             );
         }

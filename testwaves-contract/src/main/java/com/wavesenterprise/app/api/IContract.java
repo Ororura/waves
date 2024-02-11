@@ -32,7 +32,7 @@ public interface IContract {
     void approveCreateUser(@InvokeParam(name = "id") int id, @InvokeParam(name = "status") boolean status, @InvokeParam(name = "sender")String sender);
 
     @ContractAction
-    void formatOrder(@InvokeParam(name = "requester") String requester, @InvokeParam(name = "id") int id, @InvokeParam(name = "amount") int amount, @InvokeParam(name = "date") String date, @InvokeParam(name = "sender") String sender);
+    void formatOrder(@InvokeParam(name = "id") int id, @InvokeParam(name = "amount") int amount, @InvokeParam(name = "date") String date, @InvokeParam(name = "sender") String sender);
 
     @ContractAction
     void createShopCard(@InvokeParam(name = "product") Product product, @InvokeParam(name = "regions") String regions, @InvokeParam(name = "sender") String sender);
@@ -49,7 +49,7 @@ public interface IContract {
         public static final String SUPPLIER_ROLE = "supplier";
         public static final String DISTRIBUTOR_ROLE = "distributor";
         public static final String USER_ROLE = "user";
-        public static final String ORDER_PRODUCTION = "ORDER_PRODUCTION";
+        public static final String ORDER_PRODUCTION = "_";
         public static final String NEW_USERS = "_";
         public static final String STATUS_PREPARING = "preparing";
         public static final String STATUS_PROCESSING = "processing";
@@ -58,5 +58,6 @@ public interface IContract {
         public static final String STATUS_APPROVED = "approved";
         public static final String ON_CHECK = "onCheck";
         public static final String PRODUCT_MAPPING = "products";
+        public static final String ORDER_PRODUCT = "orders";
     }
 }
