@@ -4,6 +4,7 @@ import static com.wavesenterprise.app.api.IContract.Keys.*;
 
 public class OrderProduction {
     private int id;
+    private String productName;
     private int amount;
     private String date;
     private int price;
@@ -21,6 +22,14 @@ public class OrderProduction {
     }
 
     public OrderProduction() {
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public String getCompany() {

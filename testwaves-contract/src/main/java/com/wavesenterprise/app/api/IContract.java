@@ -59,5 +59,6 @@ public interface IContract {
         public static final String ON_CHECK = "onCheck";
         public static final String PRODUCT_MAPPING = "products";
         public static final String ORDER_PRODUCT = "orders";
+        public static final String COMPANY_NAMES = "companyNames";
     }
 }

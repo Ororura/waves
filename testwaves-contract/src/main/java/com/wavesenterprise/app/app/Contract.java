@@ -25,12 +25,14 @@ public class Contract implements IContract {
     private final Mapping<List<User>> newUsersMapping;
     private final Mapping<Company> companyMapping;
     private final Mapping<List<Product>> onCheckProductCardMapping;
+    private final Mapping<List<String>> companyNamesMapping;
 
     List<Product> productList = new ArrayList<>();
     List<OrderProduction> orderList = new ArrayList<>();
     List<User> newUserList = new ArrayList<>();
     List<Product> onCheckProductCardList = new ArrayList<>();
     List<OrderProduction> orderProductionsList = new ArrayList<>();
+    List<String> companyNamesList = new ArrayList<>();
 
 
     public Contract(ContractState contractState, ContractCall call) {
@@ -46,6 +48,8 @@ public class Contract implements IContract {
         this.companyMapping = contractState.getMapping(Company.class, COMPANY_MAPPING);
         this.onCheckProductCardMapping = contractState.getMapping(new TypeReference<>() {
         }, ON_CHECK);
+        this.companyNamesMapping = contractState.getMapping(new TypeReference<List<String>>() {
+        }, "_");
     }
 
     @Override
@@ -54,6 +58,7 @@ public class Contract implements IContract {
         this.newUsersMapping.put("USERS", this.newUserList);
         this.onCheckProductCardMapping.put(PRODUCT_MAPPING, this.onCheckProductCardList);
         this.orderProductionMapping.put(ORDER_PRODUCT, orderProductionsList);
+        this.companyNamesMapping.put(COMPANY_NAMES, this.companyNamesList);
         addUser(new User("admin", "admin", "admin", null, null, null, 0, null));
     }
 
@@ -100,10 +105,16 @@ public class Contract implements IContract {
         if (status) {
             this.newUsersMapping.tryGet("USERS").ifPresent(el -> {
                 addUser(el.get(id));
-                if (el.get(id).getCompanyName() != null && !Objects.equals(el.get(id).getRole(), USER_ROLE)) {
+                System.out.println(this.companyMapping.tryGet(el.get(id).getCompanyName()).isEmpty());
+                System.out.println(!Objects.equals(el.get(id).getRole(), USER_ROLE));
+                if (this.companyMapping.tryGet(el.get(id).getCompanyName()).isEmpty() && !Objects.equals(el.get(id).getRole(), USER_ROLE)) {
                     List<String> users = new ArrayList<>();
                     users.add(el.get(id).getLogin());
                     this.companyMapping.put(el.get(id).getCompanyName(), new Company(el.get(id).getCompanyName(), users));
+                    this.companyNamesMapping.tryGet(COMPANY_NAMES).ifPresent(names -> {
+                        names.add(el.get(id).getCompanyName());
+                        this.companyNamesMapping.put(COMPANY_NAMES, names);
+                    });
                 }
                 el.get(id).setStatus(STATUS_ACCEPTED);
                 this.newUsersMapping.put("USERS", el);
@@ -158,6 +169,7 @@ public class Contract implements IContract {
                 if (!found) {
                     throw new IllegalStateException("В ваш регион не доставляется");
                 }
+            orderProduction.setProductName(shopMap.getCompanyName());
             });
             orderProduction.setCompany(orderProduction.getCompany());
             order.add(orderProduction);
