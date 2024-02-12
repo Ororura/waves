@@ -11,8 +11,9 @@ public class ChechStatus {
         }
     }
 
-    public static void onlySupplierOrAdmin(User user) {
-        if (!user.getRole().equals(ADMIN_ROLE) || !user.getRole().equals(DISTRIBUTOR_ROLE)) {
+    //TODO проверить работу
+    public static void onlyDistOrAdmin(User user) {
+        if (!user.getRole().equals(ADMIN_ROLE) && !user.getRole().equals(DISTRIBUTOR_ROLE)) {
             throw new IllegalStateException("Вы не дистрибутор или оператор");
         }
     }
