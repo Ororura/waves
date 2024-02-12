@@ -227,7 +227,7 @@ public class Contract implements IContract {
                 throw new IllegalStateException("Вы не можете оформить этот заказ");
             }
         });
-
+//asd
         //Если дистрибьютор не меняет данные в заказе, то в запросе отправляется -1
         if (amount != -1 || !Objects.equals(date, "-1")) {
             System.out.println("IF TEST");
