@@ -210,21 +210,20 @@ public class Contract implements IContract {
         });
     }
 
-    //TODO: Если вводить корректирующие данные для заказа, то проверка попадает в else, а не if.
+    //TODO: Если вводить корректирующие данные для заказа, то проверка попадает в else, а не if. Неправильно работает проверка на роль
     @Override
     public void formatOrder(int id, int amount, String date, String sender) {
-        ChechStatus.onlySupplierOrAdmin(this.userMapping.tryGet(sender).get());
+        System.out.println("WORKING");
+        System.out.println("status");
+       // ChechStatus.onlySupplierOrAdmin(this.userMapping.tryGet(sender).get());
         System.out.println("WORKING");
         this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(order -> {
-            boolean found = false;
-            for (String element : this.companyMapping.tryGet(ORDER_PRODUCT).get().getCompanyShop().get(order.get(id).getId()).getRegions()) {
-                if (this.userMapping.tryGet(ORDER_PRODUCT).get().getRegion().equals(element)) {
-                    System.out.println("FOUND");
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
+            System.out.println("WORK2");
+
+            System.out.println(this.companyMapping.tryGet(this.orderProductionMapping.tryGet(ORDER_PRODUCT).get().get(id).getCompany()).get().getCompanyShop().get(order.get(id).getId()).getRegions());
+
+            System.out.println(HashComponent.hasCommonElement(this.userMapping.tryGet(sender).get().getSupplyRegions(), this.companyMapping.tryGet(this.orderProductionMapping.tryGet(ORDER_PRODUCT).get().get(id).getCompany()).get().getCompanyShop().get(order.get(id).getId()).getRegions()));
+            if (!HashComponent.hasCommonElement(this.userMapping.tryGet(sender).get().getSupplyRegions(), this.companyMapping.tryGet(this.orderProductionMapping.tryGet(ORDER_PRODUCT).get().get(id).getCompany()).get().getCompanyShop().get(order.get(id).getId()).getRegions())) {
                 throw new IllegalStateException("Вы не можете оформить этот заказ");
             }
         });
