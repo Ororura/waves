@@ -46,7 +46,6 @@ public class Contract implements IContract {
         this.companyMapping = contractState.getMapping(Company.class, COMPANY_MAPPING);
         this.onCheckProductCardMapping = contractState.getMapping(new TypeReference<>() {
         }, ON_CHECK);
-
     }
 
     @Override
@@ -65,7 +64,8 @@ public class Contract implements IContract {
         this.onCheckProductCardMapping.tryGet(PRODUCT_MAPPING).ifPresent(card -> {
             card.get(id).setMaxCount(max);
             card.get(id).setMinCount(min);
-            for (String user : distributors.split(",")) {
+            String[] distMass = distributors.split(",");
+            for (String user : distMass) {
                 this.userMapping.tryGet(user).ifPresent(userMap -> {
                     if (HashComponent.hasCommonElement(userMap.getSupplyRegions(), card.get(id).getRegions())) {
                         card.get(id).addDistributors(user);
