@@ -10,6 +10,9 @@ import com.wavesenterprise.sdk.contract.api.state.ContractState;
 import com.wavesenterprise.sdk.contract.api.state.TypeReference;
 import com.wavesenterprise.sdk.contract.api.state.mapping.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.wavesenterprise.app.api.IContract.Keys.*;
@@ -31,7 +34,6 @@ public class Contract implements IContract {
     List<Product> onCheckProductCardList = new ArrayList<>();
     List<OrderProduction> orderProductionsList = new ArrayList<>();
     List<String> companyNamesList = new ArrayList<>();
-
 
     public Contract(ContractState contractState, ContractCall call) {
         this.contractState = contractState;
@@ -149,9 +151,11 @@ public class Contract implements IContract {
         });
     }
 
+    //TODO проверить работу минимальных и максимальных проверок
     @Override
     public void createOrderProduction(OrderProduction orderProduction) {
         ChechStatus.isBlocked(this.userMapping.tryGet(orderProduction.getCustomer()).get());
+        ChechStatus.checkCount(this.companyMapping.tryGet(orderProduction.getCompany()).get().getCompanyShop().get(orderProduction.getId()), orderProduction.getAmount());
         this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(order -> {
             this.companyMapping.tryGet(orderProduction.getCompany()).ifPresent(shopMap -> {
                 boolean found = false;
@@ -173,6 +177,20 @@ public class Contract implements IContract {
     }
 
     @Override
+    public void sendTokens(String from, String to, int amount) {
+        this.userMapping.tryGet(from).ifPresent(user -> {
+            ChechStatus.checkBalance(user, amount);
+            user.setBalance(user.getBalance() - amount);
+            this.userMapping.put(from, user);
+            this.userMapping.tryGet(to).ifPresent(userTo -> {
+                userTo.setBalance(user.getBalance() + amount);
+                this.userMapping.put(to, userTo);
+            });
+        });
+
+    }
+
+    @Override
     public void transferProduct(int orderId, String to, String from) {
         this.companyMapping.tryGet(from).ifPresent(company -> {
             this.userMapping.tryGet(to).ifPresent(user -> {
@@ -186,14 +204,34 @@ public class Contract implements IContract {
     }
 
     @Override
+    public void collectProduct(int orderId, String time, String sender) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String formattedDateTime = currentTime.format(formatter);
+        LocalDate orderDate = LocalDate.parse(time, formatter);
+
+        if (orderDate.isAfter(LocalDate.parse(formattedDateTime, formatter))) {
+            throw new IllegalStateException("Заказ ещё не доставлен");
+        }
+
+        if (!Objects.equals(this.orderProductionMapping.tryGet(ORDER_PRODUCT).get().get(orderId).getCustomer(), sender)) {
+            throw new IllegalStateException("Вы не владелец заказа");
+        }
+
+        this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(currentOrder -> {
+            transferProduct(currentOrder.get(orderId).getId(), sender, currentOrder.get(orderId).getCompany());
+        });
+    }
+
+    @Override
     public void acceptOrder(int order, boolean status, String sender) {
         this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(el -> {
             if (status) {
-                OrderProduction currentOrder = el.get(order);
-                transferProduct(currentOrder.getId(), sender, currentOrder.getCompany());
+                if (el.get(order).isPreOrder()) {
+                    sendTokens(sender, el.get(order).getDistributor(), el.get(order).getPrice());
+                }
                 el.get(order).setStatus(STATUS_ACCEPTED);
                 this.orderProductionMapping.put(ORDER_PRODUCT, el);
-
             } else {
                 el.get(order).setStatus(STATUS_DENIED);
                 this.orderProductionMapping.put(ORDER_PRODUCT, el);
@@ -201,10 +239,9 @@ public class Contract implements IContract {
         });
     }
 
-    //TODO: Если вводить корректирующие данные для заказа, то проверка попадает в else, а не if. Неправильно работает проверка на роль
     @Override
     public void formatOrder(int id, int amount, String date, String sender) {
-        //ChechStatus.onlySupplierOrAdmin(this.userMapping.tryGet(sender).get());
+        ChechStatus.onlyDistOrAdmin(this.userMapping.tryGet(sender).get());
         this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(order -> {
             if (!HashComponent.hasCommonElement(this.userMapping.tryGet(sender).get().getSupplyRegions(), this.companyMapping.tryGet(this.orderProductionMapping.tryGet(ORDER_PRODUCT).get().get(id).getCompany()).get().getCompanyShop().get(order.get(id).getId()).getRegions())) {
                 throw new IllegalStateException("Вы не можете оформить этот заказ");
@@ -212,17 +249,17 @@ public class Contract implements IContract {
         });
         //Если дистрибьютор не меняет данные в заказе, то в запросе отправляется -1
         if (amount != -1 || !Objects.equals(date, "-1")) {
-            System.out.println("IF TEST");
             this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(order -> {
                 order.get(id).setStatus(STATUS_PROCESSING);
+                order.get(id).setDistributor(sender);
                 order.get(id).setDate(date);
                 order.get(id).setPrice(amount);
                 this.orderProductionMapping.put(ORDER_PRODUCT, order);
             });
         } else {
-            System.out.println("ELSE TEST");
             this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(order -> {
                 order.get(id).setStatus(STATUS_PROCESSING);
+                order.get(id).setDistributor(sender);
                 this.orderProductionMapping.put(ORDER_PRODUCT, order);
             });
         }

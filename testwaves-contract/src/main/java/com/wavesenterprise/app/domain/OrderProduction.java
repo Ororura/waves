@@ -10,18 +10,37 @@ public class OrderProduction {
     private int price;
     private String customer;
     private String company;
+    private boolean preOrder;
+    private String distributor;
     private String status = STATUS_PREPARING;
 
-    public OrderProduction(int id, int amount, String date, int price, String customer, String company) {
+    public OrderProduction(int id, int amount, String date, int price, String customer, String company, boolean preOrder) {
         this.id = id;
         this.amount = amount;
         this.date = date;
         this.price = price;
         this.customer = customer;
         this.company = company;
+        this.preOrder = preOrder;
     }
 
     public OrderProduction() {
+    }
+
+    public String getDistributor() {
+        return distributor;
+    }
+
+    public void setDistributor(String distributor) {
+        this.distributor = distributor;
+    }
+
+    public boolean isPreOrder() {
+        return preOrder;
+    }
+
+    public void setPreOrder(boolean preOrder) {
+        this.preOrder = preOrder;
     }
 
     public String getProductName() {

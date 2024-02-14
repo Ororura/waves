@@ -1,5 +1,6 @@
 package com.wavesenterprise.app.features;
 
+import com.wavesenterprise.app.domain.Product;
 import com.wavesenterprise.app.domain.User;
 
 import static com.wavesenterprise.app.api.IContract.Keys.*;
@@ -11,7 +12,6 @@ public class ChechStatus {
         }
     }
 
-    //TODO проверить работу
     public static void onlyDistOrAdmin(User user) {
         if (!user.getRole().equals(ADMIN_ROLE) && !user.getRole().equals(DISTRIBUTOR_ROLE)) {
             throw new IllegalStateException("Вы не дистрибутор или оператор");
@@ -34,5 +34,18 @@ public class ChechStatus {
         if (!status) {
             throw new IllegalStateException("Вы отменили подтверждение");
         }
+    }
+
+    public static void checkBalance(User user, int amount) {
+        if (user.getBalance() < amount) {
+            throw new IllegalStateException("У вас недостаточно баланса");
+        }
+    }
+
+    public static void checkCount(Product product, int count) {
+        if (product.getMinCount() >= count)
+            throw new IllegalStateException("Минимальное кол-во продуктов: " + product.getMinCount());
+        if (product.getMaxCount() <= count)
+            throw new IllegalStateException("Максимальное кол-во продуктов: " + product.getMaxCount());
     }
 }

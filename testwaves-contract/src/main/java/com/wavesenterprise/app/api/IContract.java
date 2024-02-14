@@ -11,10 +11,15 @@ public interface IContract {
     void addUser(@InvokeParam(name = "addUser") User user);
 
     @ContractAction
+    void collectProduct(@InvokeParam(name = "orderId") int orderId, @InvokeParam(name = "time")String time, @InvokeParam(name = "sender") String sender);
+
+    @ContractAction
     void blockUser(@InvokeParam(name = "userName") String name,
                    @InvokeParam(name = "status") boolean status,
                    @InvokeParam(name = "sender") String sender);
 
+    @ContractAction
+    void sendTokens(@InvokeParam(name = "from") String from, @InvokeParam(name = "to") String to, @InvokeParam(name = "amount") int amount);
 
     @ContractAction
     void createOrderProduction(@InvokeParam(name = "product") OrderProduction orderProduction);
@@ -29,7 +34,7 @@ public interface IContract {
     void createAccount(@InvokeParam(name = "user") User user, String supplyRegions);
 
     @ContractAction
-    void approveCreateUser(@InvokeParam(name = "id") int id, @InvokeParam(name = "status") boolean status, @InvokeParam(name = "sender")String sender);
+    void approveCreateUser(@InvokeParam(name = "id") int id, @InvokeParam(name = "status") boolean status, @InvokeParam(name = "sender") String sender);
 
     @ContractAction
     void formatOrder(@InvokeParam(name = "id") int id, @InvokeParam(name = "amount") int amount, @InvokeParam(name = "date") String date, @InvokeParam(name = "sender") String sender);
