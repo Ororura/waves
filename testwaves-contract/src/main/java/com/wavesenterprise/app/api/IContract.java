@@ -11,7 +11,7 @@ public interface IContract {
     void addUser(@InvokeParam(name = "addUser") User user);
 
     @ContractAction
-    void collectProduct(@InvokeParam(name = "orderId") int orderId, @InvokeParam(name = "time")String time, @InvokeParam(name = "sender") String sender);
+    void collectProduct(@InvokeParam(name = "orderId") int orderId, @InvokeParam(name = "sender") String sender);
 
     @ContractAction
     void blockUser(@InvokeParam(name = "userName") String name,

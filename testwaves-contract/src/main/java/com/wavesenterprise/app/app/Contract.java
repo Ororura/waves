@@ -59,7 +59,7 @@ public class Contract implements IContract {
         this.onCheckProductCardMapping.put(PRODUCT_MAPPING, this.onCheckProductCardList);
         this.orderProductionMapping.put(ORDER_PRODUCT, orderProductionsList);
         this.companyNamesMapping.put(COMPANY_NAMES, this.companyNamesList);
-        addUser(new User("admin", "admin", "admin", null, null, null, 0, null));
+        addUser(new User("admin", "admin", "admin", "null", "null", "null", 0, "null"));
     }
 
     @Override
@@ -70,13 +70,20 @@ public class Contract implements IContract {
             card.get(id).setMaxCount(max);
             card.get(id).setMinCount(min);
             String[] distMass = distributors.split(",");
+            System.out.println("OK1");
             for (String user : distMass) {
+                System.out.println("OK2");
                 this.userMapping.tryGet(user).ifPresent(userMap -> {
+                    System.out.println("OK3");
+                    System.out.println(card.get(id).getRegions());
+                    System.out.println(userMap.getSupplyRegions());
                     if (HashComponent.hasCommonElement(userMap.getSupplyRegions(), card.get(id).getRegions())) {
+                        System.out.println("OK4");
                         card.get(id).addDistributors(user);
                         card.get(id).setStatus(STATUS_APPROVED);
                         this.onCheckProductCardMapping.put(PRODUCT_MAPPING, card);
                         this.companyMapping.tryGet(userMap.getCompanyName()).ifPresent(companyMap -> {
+                            System.out.println("OK5");
                             companyMap.addCompanyShop(card.get(id));
                             this.companyMapping.put(company, companyMap);
                         });
@@ -151,7 +158,6 @@ public class Contract implements IContract {
         });
     }
 
-    //TODO проверить работу минимальных и максимальных проверок
     @Override
     public void createOrderProduction(OrderProduction orderProduction) {
         ChechStatus.isBlocked(this.userMapping.tryGet(orderProduction.getCustomer()).get());
@@ -183,11 +189,10 @@ public class Contract implements IContract {
             user.setBalance(user.getBalance() - amount);
             this.userMapping.put(from, user);
             this.userMapping.tryGet(to).ifPresent(userTo -> {
-                userTo.setBalance(user.getBalance() + amount);
+                userTo.setBalance(userTo.getBalance() + amount);
                 this.userMapping.put(to, userTo);
             });
         });
-
     }
 
     @Override
@@ -204,19 +209,25 @@ public class Contract implements IContract {
     }
 
     @Override
-    public void collectProduct(int orderId, String time, String sender) {
+    public void collectProduct(int orderId, String sender) {
+        this.orderProductionMapping.tryGet(ORDER_PRODUCT).get().get(orderId).getDate();
         LocalDateTime currentTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String formattedDateTime = currentTime.format(formatter);
-        LocalDate orderDate = LocalDate.parse(time, formatter);
+        LocalDate formattedDateTime = LocalDate.parse(currentTime.format(formatter));
 
-        if (orderDate.isAfter(LocalDate.parse(formattedDateTime, formatter))) {
+        if (!formattedDateTime.isAfter(LocalDate.parse(this.orderProductionMapping.tryGet(ORDER_PRODUCT).get().get(orderId).getDate()))) {
             throw new IllegalStateException("Заказ ещё не доставлен");
         }
 
         if (!Objects.equals(this.orderProductionMapping.tryGet(ORDER_PRODUCT).get().get(orderId).getCustomer(), sender)) {
             throw new IllegalStateException("Вы не владелец заказа");
         }
+
+        this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(orderProductions -> {
+            if (!orderProductions.get(orderId).isPreOrder()) {
+                sendTokens(sender, orderProductions.get(orderId).getDistributor(), orderProductions.get(orderId).getPrice());
+            }
+        });
 
         this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(currentOrder -> {
             transferProduct(currentOrder.get(orderId).getId(), sender, currentOrder.get(orderId).getCompany());
