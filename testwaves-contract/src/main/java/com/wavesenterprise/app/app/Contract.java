@@ -59,7 +59,7 @@ public class Contract implements IContract {
         this.onCheckProductCardMapping.put(PRODUCT_MAPPING, this.onCheckProductCardList);
         this.orderProductionMapping.put(ORDER_PRODUCT, orderProductionsList);
         this.companyNamesMapping.put(COMPANY_NAMES, this.companyNamesList);
-        addUser(new User("admin", "admin", "admin", "null", "null", "null", 0, "null"));
+        addUser(new User("admin", "admin", "admin", "null", "null", "880055553535", 0, "null"));
     }
 
     @Override
@@ -70,20 +70,13 @@ public class Contract implements IContract {
             card.get(id).setMaxCount(max);
             card.get(id).setMinCount(min);
             String[] distMass = distributors.split(",");
-            System.out.println("OK1");
             for (String user : distMass) {
-                System.out.println("OK2");
                 this.userMapping.tryGet(user).ifPresent(userMap -> {
-                    System.out.println("OK3");
-                    System.out.println(card.get(id).getRegions());
-                    System.out.println(userMap.getSupplyRegions());
                     if (HashComponent.hasCommonElement(userMap.getSupplyRegions(), card.get(id).getRegions())) {
-                        System.out.println("OK4");
                         card.get(id).addDistributors(user);
                         card.get(id).setStatus(STATUS_APPROVED);
                         this.onCheckProductCardMapping.put(PRODUCT_MAPPING, card);
                         this.companyMapping.tryGet(userMap.getCompanyName()).ifPresent(companyMap -> {
-                            System.out.println("OK5");
                             companyMap.addCompanyShop(card.get(id));
                             this.companyMapping.put(company, companyMap);
                         });
