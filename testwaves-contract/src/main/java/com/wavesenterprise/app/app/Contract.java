@@ -1,19 +1,27 @@
 package com.wavesenterprise.app.app;
 
+import com.google.common.hash.Hashing;
 import com.wavesenterprise.app.api.IContract;
-import com.wavesenterprise.app.domain.*;
+import com.wavesenterprise.app.domain.Company;
+import com.wavesenterprise.app.domain.OrderProduction;
+import com.wavesenterprise.app.domain.Product;
+import com.wavesenterprise.app.domain.User;
 import com.wavesenterprise.app.features.ChechStatus;
 import com.wavesenterprise.app.features.HashComponent;
 import com.wavesenterprise.sdk.contract.api.annotation.ContractHandler;
 import com.wavesenterprise.sdk.contract.api.domain.ContractCall;
 import com.wavesenterprise.sdk.contract.api.state.ContractState;
 import com.wavesenterprise.sdk.contract.api.state.TypeReference;
-import com.wavesenterprise.sdk.contract.api.state.mapping.*;
+import com.wavesenterprise.sdk.contract.api.state.mapping.Mapping;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import static com.wavesenterprise.app.api.IContract.Keys.*;
 
@@ -22,18 +30,20 @@ public class Contract implements IContract {
     private final ContractState contractState;
     private final ContractCall call;
     private final Mapping<User> userMapping;
-    private final Mapping<List<Product>> usersProductMapping;
-    private final Mapping<List<OrderProduction>> orderProductionMapping;
-    private final Mapping<List<User>> newUsersMapping;
+    private final Mapping<ArrayList<Product>> usersProductMapping;
+    private final Mapping<ArrayList<OrderProduction>> orderProductionMapping;
+    private final Mapping<ArrayList<User>> newUsersMapping;
     private final Mapping<Company> companyMapping;
-    private final Mapping<List<Product>> onCheckProductCardMapping;
-    private final Mapping<List<String>> companyNamesMapping;
+    private final Mapping<ArrayList<Product>> onCheckProductCardMapping;
+    private final Mapping<ArrayList<String>> companyNamesMapping;
+    private final Mapping<ArrayList<String>> hashData;
 
-    List<Product> productList = new ArrayList<>();
-    List<User> newUserList = new ArrayList<>();
-    List<Product> onCheckProductCardList = new ArrayList<>();
-    List<OrderProduction> orderProductionsList = new ArrayList<>();
-    List<String> companyNamesList = new ArrayList<>();
+
+    ArrayList<Product> productList = new ArrayList<>();
+    ArrayList<User> newUserList = new ArrayList<>();
+    ArrayList<Product> onCheckProductCardList = new ArrayList<>();
+    ArrayList<OrderProduction> orderProductionsList = new ArrayList<>();
+    ArrayList<String> companyNamesList = new ArrayList<>();
 
     public Contract(ContractState contractState, ContractCall call) {
         this.contractState = contractState;
@@ -50,6 +60,8 @@ public class Contract implements IContract {
         }, ON_CHECK);
         this.companyNamesMapping = contractState.getMapping(new TypeReference<>() {
         }, "_");
+        this.hashData = contractState.getMapping(new TypeReference<>() {
+        }, "HASH_DATA");
     }
 
     @Override
@@ -84,7 +96,6 @@ public class Contract implements IContract {
                 });
             }
         });
-
     }
 
     @Override
@@ -203,7 +214,6 @@ public class Contract implements IContract {
 
     @Override
     public void collectProduct(int orderId, String sender) {
-        this.orderProductionMapping.tryGet(ORDER_PRODUCT).get().get(orderId).getDate();
         LocalDateTime currentTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         LocalDate formattedDateTime = LocalDate.parse(currentTime.format(formatter));
@@ -259,6 +269,10 @@ public class Contract implements IContract {
                 order.get(id).setDate(date);
                 order.get(id).setPrice(amount);
                 this.orderProductionMapping.put(ORDER_PRODUCT, order);
+                String hashingStatus = Hashing.sha256()
+                        .hashString(order.get(id).getStatus(), StandardCharsets.UTF_8)
+                        .toString();
+                this.hashData.tryGet("HASH_DATA").ifPresent(el -> el.add(hashingStatus));
             });
         } else {
             this.orderProductionMapping.tryGet(ORDER_PRODUCT).ifPresent(order -> {

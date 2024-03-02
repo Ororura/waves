@@ -1,6 +1,5 @@
 package com.wavesenterprise.app.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.wavesenterprise.app.api.IContract.Keys.ON_CHECK;

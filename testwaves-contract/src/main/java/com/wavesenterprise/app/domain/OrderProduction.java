@@ -1,6 +1,6 @@
 package com.wavesenterprise.app.domain;
 
-import static com.wavesenterprise.app.api.IContract.Keys.*;
+import static com.wavesenterprise.app.api.IContract.Keys.STATUS_PREPARING;
 
 public class OrderProduction {
     private int id;

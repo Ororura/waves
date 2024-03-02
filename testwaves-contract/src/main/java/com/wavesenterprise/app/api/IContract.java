@@ -1,7 +1,11 @@
 package com.wavesenterprise.app.api;
 
-import com.wavesenterprise.app.domain.*;
-import com.wavesenterprise.sdk.contract.api.annotation.*;
+import com.wavesenterprise.app.domain.OrderProduction;
+import com.wavesenterprise.app.domain.Product;
+import com.wavesenterprise.app.domain.User;
+import com.wavesenterprise.sdk.contract.api.annotation.ContractAction;
+import com.wavesenterprise.sdk.contract.api.annotation.ContractInit;
+import com.wavesenterprise.sdk.contract.api.annotation.InvokeParam;
 
 public interface IContract {
     @ContractInit
